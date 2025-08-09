@@ -1,110 +1,205 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Links WebApp — Telegram</title>
-  <meta name="description" content="Telegram WebApp — list & copy links, premium gating, donate, victim bot" />
-  <link rel="stylesheet" href="mystyle.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Intelligent Verification Linkbot - Telegram WebApp</title>
+<style>
+  /* Reset & basics */
+  body, html {
+    margin:0; padding:0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f2f5; color:#222;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+  a { color:#2962ff; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  h1, h2, h3 { margin: 0.5em 0; }
+
+  /* Container for main content */
+  #app {
+    flex-grow: 1;
+    padding: 15px;
+    max-width: 480px;
+    margin: 0 auto;
+    background: white;
+    box-shadow: 0 0 12px rgb(0 0 0 / 0.1);
+    border-radius: 10px;
+  }
+
+  /* Navigation bar */
+  nav {
+    display: flex;
+    justify-content: space-around;
+    background: #fff;
+    border-top: 1px solid #ddd;
+    padding: 10px 0;
+  }
+  nav button {
+    background: none;
+    border: none;
+    color: #555;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-grow: 1;
+    transition: color 0.3s ease;
+  }
+  nav button svg {
+    width: 24px; height: 24px;
+    margin-bottom: 4px;
+    stroke-width: 2;
+    stroke: currentColor;
+    fill: none;
+  }
+  nav button.active, nav button:hover {
+    color: #2962ff;
+  }
+
+  section {
+    display: none;
+  }
+  section.active {
+    display: block;
+  }
+
+  /* Links list styling */
+  .link-card {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 1px 5px rgb(0 0 0 / 0.05);
+    background: #fafafa;
+  }
+  .link-card img {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    object-fit: cover;
+    margin-right: 15px;
+    border: 1px solid #ddd;
+  }
+  .link-info {
+    flex-grow: 1;
+  }
+  .link-name {
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-size: 16px;
+  }
+  .link-url {
+    font-size: 13px;
+    color: #555;
+    word-break: break-all;
+    user-select: all;
+  }
+  .copy-btn {
+    margin-left: 10px;
+    background-color: #2962ff;
+    color: white;
+    border: none;
+    padding: 7px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background-color 0.3s ease;
+  }
+  .copy-btn:hover {
+    background-color: #0039cb;
+  }
+
+  /* Victim section */
+  #victim button {
+    margin-top: 15px;
+    background: #ff6f61;
+    color: white;
+    border: none;
+    padding: 15px 25px;
+    font-size: 18px;
+    font-weight: 700;
+    border-radius: 12px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease;
+  }
+  #victim button:hover {
+    background: #e55344;
+  }
+
+  /* Donate styling */
+  #donate p {
+    margin-bottom: 15px;
+    line-height: 1.5;
+  }
+  #donate .account {
+    font-weight: 700;
+    font-size: 16px;
+    background: #e3f2fd;
+    padding: 12px;
+    border-radius: 8px;
+    word-break: break-all;
+  }
+
+  /* Responsive */
+  @media (max-width: 500px) {
+    #app {
+      margin: 0 10px;
+      border-radius: 0;
+      box-shadow: none;
+    }
+  }
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <!-- Header -->
-    <header>
-      <div class="brand">
-        <div class="logo"><img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="logo"></div>
-        <div>
-          <h1>Links WebApp</h1>
-          <p class="lead">Your personalized link list — works with Telegram WebApp</p>
-        </div>
-      </div>
-      <div style="text-align:right">
-        <div id="user-name" class="muted">Not signed in</div>
-        <div id="user-handle" class="muted" style="font-size:13px"></div>
-      </div>
-    </header>
 
-    <!-- Main Card -->
-    <div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;">
-        <div>
-          <strong id="welcome">Welcome 👋</strong>
-          <div class="muted" style="font-size:13px">Tap any tab below or use the bottom navigation</div>
-        </div>
-        <div style="display:flex;gap:8px">
-          <button id="refresh-btn" class="btn small">Refresh</button>
-          <button id="copy-id-btn" title="Copy your Telegram ID" class="btn small ghost">Copy ID</button>
-        </div>
-      </div>
-      <div class="tabs" style="margin-top:14px">
-        <div class="tab-btn active" data-target="home">Home</div>
-        <div class="tab-btn" data-target="premium">Premium</div>
-        <div class="tab-btn" data-target="victim">Victim</div>
-        <div class="tab-btn" data-target="donate">Donate</div>
-      </div>
+<div id="app">
+  <!-- Sections -->
+  <section id="home" class="active" aria-label="Home section"></section>
+  <section id="premium" aria-label="Premium links section"></section>
+  <section id="victim" aria-label="Victim section">
+    <h2>Open this bot to view all your victims</h2>
+    <button id="open-victim-bot">👉 Open Bot</button>
+  </section>
+  <section id="donate" aria-label="Donate section">
+    <h2>Support Us with Donations</h2>
+    <p>To promote our links and maintain servers and domain names, please consider donating.</p>
+    <p>If you are in Nigeria, send donations to:</p>
+    <div class="account">9114301708<br/>Opay Bank<br/>Olatunji Abdumalik Ayomide</div>
+    <p>If you are outside Nigeria, send your donations to the following crypto address:</p>
+    <div class="account">BNB/USDT/BEP20:<br/>0xbBcc409872bC2441400735624638F3D67DAa7C4C</div>
+  </section>
+</div>
 
-      <!-- Sections -->
-      <section id="home" class="section active">
-        <div class="links-grid" id="free-links"></div>
-      </section>
-      <section id="premium" class="section">
-        <div id="premium-wrap">
-          <strong>Premium Links</strong>
-          <div class="links-grid" id="premium-links"></div>
-          <div id="premium-msg" style="margin-top:10px;color:var(--muted);font-size:13px"></div>
-        </div>
-      </section>
-      <section id="victim" class="section">
-        <div class="card" style="padding:14px">
-          <h3>Open bot to view victims</h3>
-          <div class="victim-cta">
-            <div style="display:flex;gap:12px;align-items:center">
-              <div style="width:72px;height:72px;border-radius:12px;background:#071028;display:grid;place-items:center;">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" width="48">
-              </div>
-              <div><strong>intelligentverificationlinkbot</strong></div>
-            </div>
-            <button id="open-victim-bot" class="open-bot">Open Bot →</button>
-          </div>
-        </div>
-      </section>
-      <section id="donate" class="section">
-        <div class="donate-list">
-          <div class="donate-item"><span>BTC Wallet</span><span class="muted">Copy from script</span></div>
-           <div class="donate-item"><span>Bank  Transfer</span><span class="muted">
-             <li>Account No: 9114301708</li>
-                <li>Bank Name: Opay</li>
-                   <li>Recepient Name: Olatunji Abdulmalik Ayomide</li>
-           </span></div>
-        </div>
-      </section>
-    </div>
-  </div>
+<!-- Navigation -->
+<nav aria-label="Primary navigation">
+  <button id="nav-home" class="active" aria-controls="home" aria-selected="true" role="tab">
+    <!-- Home icon -->
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M3 12L12 3l9 9v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-9z"/></svg>
+    Home
+  </button>
+  <button id="nav-premium" aria-controls="premium" aria-selected="false" role="tab">
+    <!-- Star icon -->
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+    Premium
+  </button>
+  <button id="nav-victim" aria-controls="victim" aria-selected="false" role="tab">
+    <!-- User icon -->
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a7 7 0 0 1 13 0"/></svg>
+    Victim
+  </button>
+  <button id="nav-donate" aria-controls="donate" aria-selected="false" role="tab">
+    <!-- Donate icon -->
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M12 1v22m-7-7h14"/></svg>
+    Donate
+  </button>
+</nav>
 
-  <!-- Bottom nav -->
-  <div class="bottom-nav">
-    <div class="nav-item active" data-target="home">Home</div>
-    <div class="nav-item" data-target="premium">Premium</div>
-    <div class="nav-item" data-target="victim">Victim</div>
-    <div class="nav-item" data-target="donate">Donate</div>
-  </div>
-
-  <!-- Environment Lock -->
-  <script>
-    if (!window.Telegram || !window.Telegram.WebApp || !window.Telegram.WebApp.initDataUnsafe?.user) {
-      document.body.innerHTML = `
-        <div style="text-align:center;margin-top:50px;font-family:sans-serif;">
-          <h2>❌ Open inside Telegram</h2>
-          <p>This WebApp only works inside Telegram.</p>
-        </div>
-      `;
-      throw new Error("Blocked: Not inside Telegram");
-    }
-  </script>
-
-  <!-- Scripts -->
-  <script src="https://telegram.org/js/telegram-web-app.js" defer></script>
-  <script src="premiumlist.js" defer></script>
-  <script src="main.js" defer></script>
+<!-- Include premiumlist.js and main.js -->
+<script src="premiumlist.js"></script>
+<script src="main.js"></script>
 </body>
 </html>
