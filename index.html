@@ -3,73 +3,46 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Telegram WebApp UserID Demo</title>
+<title>Simple Referral Link</title>
 <style>
-  body { font-family: Arial, sans-serif; max-width: 480px; margin: 20px auto; padding: 10px; background: #f5f7fa; }
-  .user-id { font-weight: bold; margin-bottom: 15px; }
-  .link-card { background: white; padding: 10px; margin-bottom: 12px; border-radius: 8px; box-shadow: 0 1px 5px rgba(0,0,0,0.1); }
-  .userid-label { color: #444; font-size: 14px; margin-bottom: 6px; }
-  a { color: #1a73e8; text-decoration: none; font-size: 16px; }
-  a:hover { text-decoration: underline; }
+  body { font-family: Arial, sans-serif; max-width: 480px; margin: auto; padding: 20px; }
+  input { width: 100%; font-size: 1em; padding: 8px; }
+  button { margin-top: 10px; padding: 10px; font-size: 1em; cursor: pointer; }
+  #copyMsg { color: green; margin-top: 5px; height: 20px; }
 </style>
 </head>
 <body>
 
-<div id="app">
-  <div id="userDisplay" class="user-id">Detecting Telegram User ID...</div>
+<h1>Your Referral Link</h1>
 
-  <div id="linksContainer"></div>
-</div>
+<input type="text" id="refLink" readonly placeholder="Loading your referral link..." />
+<button onclick="copyRefLink()">Copy Referral Link</button>
+<div id="copyMsg"></div>
 
 <script>
-  // Get Telegram WebApp object
   const tg = window.Telegram?.WebApp;
+  tg?.expand();
 
-  // Get user ID safely, or fallback
+  // Get current user's Telegram ID
   const telegramId = tg?.initDataUnsafe?.user?.id || null;
 
-  const userDisplay = document.getElementById('userDisplay');
-  const linksContainer = document.getElementById('linksContainer');
+  const refLinkInput = document.getElementById("refLink");
 
-  if (!telegramId) {
-    userDisplay.textContent = "⚠️ Telegram User ID not found. Please open this inside Telegram via your bot's WebApp button.";
+  if (telegramId) {
+    // Construct referral link with your bot username and the current user's Telegram ID
+    refLinkInput.value = `https://t.me/YourBotUsername?start=${telegramId}`;
   } else {
-    userDisplay.textContent = `Your Telegram User ID: ${telegramId}`;
+    refLinkInput.value = "Open this WebApp via your Telegram bot to get your referral link.";
+  }
 
-    // Example links array
-    const links = [
-      { name: "Example Link 1", url: "https://example.com/link1" },
-      { name: "Example Link 2", url: "https://example.com/link2?foo=bar" }
-    ];
-
-    // Build links with user ID prepended visibly and appended as URL param
-    links.forEach(link => {
-      // Build URL object to add userid param safely
-      const urlObj = new URL(link.url);
-      urlObj.searchParams.set("userid", telegramId);
-
-      // Create container div for each link
-      const card = document.createElement('div');
-      card.className = 'link-card';
-
-      // Visible prepended user id label
-      const userIdLabel = document.createElement('div');
-      userIdLabel.className = 'userid-label';
-      userIdLabel.textContent = `User ID: ${telegramId}`;
-
-      // The actual clickable link
-      const a = document.createElement('a');
-      a.href = urlObj.toString();
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
-      a.textContent = link.name + " →";
-
-      // Append to card
-      card.appendChild(userIdLabel);
-      card.appendChild(a);
-
-      // Append card to container
-      linksContainer.appendChild(card);
+  // Copy referral link to clipboard
+  function copyRefLink() {
+    if (!refLinkInput.value) return;
+    navigator.clipboard.writeText(refLinkInput.value).then(() => {
+      document.getElementById("copyMsg").textContent = "✅ Referral link copied!";
+      setTimeout(() => {
+        document.getElementById("copyMsg").textContent = "";
+      }, 2000);
     });
   }
 </script>
