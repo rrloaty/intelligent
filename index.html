@@ -3,321 +3,73 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Intelligent Verification Linkbot - Telegram WebApp</title>
+<title>Telegram WebApp UserID Demo</title>
 <style>
-  /* Reset & basics */
-  body, html {
-    margin:0; padding:0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f0f2f5; color:#222;
-    min-height: 100vh;
-    display: flex; flex-direction: column;
-  }
-  a { color:#2962ff; text-decoration: none; }
+  body { font-family: Arial, sans-serif; max-width: 480px; margin: 20px auto; padding: 10px; background: #f5f7fa; }
+  .user-id { font-weight: bold; margin-bottom: 15px; }
+  .link-card { background: white; padding: 10px; margin-bottom: 12px; border-radius: 8px; box-shadow: 0 1px 5px rgba(0,0,0,0.1); }
+  .userid-label { color: #444; font-size: 14px; margin-bottom: 6px; }
+  a { color: #1a73e8; text-decoration: none; font-size: 16px; }
   a:hover { text-decoration: underline; }
-  h1, h2, h3 { margin: 0.5em 0; }
-
-  /* Container for main content */
-  #app {
-    flex-grow: 1;
-    padding: 15px;
-    max-width: 480px;
-    margin: 0 auto;
-    background: white;
-    box-shadow: 0 0 12px rgb(0 0 0 / 0.1);
-    border-radius: 10px;
-  }
-
-  /* Navigation bar */
-  nav {
-    display: flex;
-    justify-content: space-around;
-    background: #fff;
-    border-top: 1px solid #ddd;
-    padding: 10px 0;
-  }
-  nav button {
-    background: none;
-    border: none;
-    color: #555;
-    font-size: 14px;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex-grow: 1;
-    transition: color 0.3s ease;
-  }
-  nav button svg {
-    width: 24px; height: 24px;
-    margin-bottom: 4px;
-    stroke-width: 2;
-    stroke: currentColor;
-    fill: none;
-  }
-  nav button.active, nav button:hover {
-    color: #2962ff;
-  }
-
-  section {
-    display: none;
-  }
-  section.active {
-    display: block;
-  }
-
-  /* Links list styling */
-  .link-card {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 0 1px 5px rgb(0 0 0 / 0.05);
-    background: #fafafa;
-  }
-  .link-card img {
-    width: 60px;
-    height: 60px;
-    border-radius: 8px;
-    object-fit: cover;
-    margin-right: 15px;
-    border: 1px solid #ddd;
-  }
-  .link-info {
-    flex-grow: 1;
-  }
-  .link-name {
-    font-weight: 600;
-    margin-bottom: 5px;
-    font-size: 16px;
-  }
-  .link-url {
-    font-size: 13px;
-    color: #555;
-    word-break: break-all;
-    user-select: all;
-  }
-  .copy-btn {
-    margin-left: 10px;
-    background-color: #2962ff;
-    color: white;
-    border: none;
-    padding: 7px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 13px;
-    transition: background-color 0.3s ease;
-  }
-  .copy-btn:hover {
-    background-color: #0039cb;
-  }
-
-  /* Victim section */
-  #victim button {
-    margin-top: 15px;
-    background: #ff6f61;
-    color: white;
-    border: none;
-    padding: 15px 25px;
-    font-size: 18px;
-    font-weight: 700;
-    border-radius: 12px;
-    cursor: pointer;
-    width: 100%;
-    transition: background-color 0.3s ease;
-  }
-  #victim button:hover {
-    background: #e55344;
-  }
-
-  /* Donate styling */
-  #donate p {
-    margin-bottom: 15px;
-    line-height: 1.5;
-  }
-  #donate .account {
-    font-weight: 700;
-    font-size: 16px;
-    background: #e3f2fd;
-    padding: 12px;
-    border-radius: 8px;
-    word-break: break-all;
-  }
-
-  /* Responsive */
-  @media (max-width: 500px) {
-    #app {
-      margin: 0 10px;
-      border-radius: 0;
-      box-shadow: none;
-    }
-  }
 </style>
 </head>
 <body>
 
 <div id="app">
-  <!-- Home Section -->
-  <section id="home" class="active" aria-label="Home section">
-    <h1>Home Section</h1>
-    <div id="home-links"></div>
-  </section>
+  <div id="userDisplay" class="user-id">Detecting Telegram User ID...</div>
 
-  <!-- Premium Section -->
-  <section id="premium" aria-label="Premium links section">
-    <h1>Premium Section</h1>
-    <div id="premium-links"></div>
-  </section>
-
-  <!-- Victim Section -->
-  <section id="victim" aria-label="Victim section">
-    <h2>Open this bot to view all your victims</h2>
-    <button id="open-victim-bot">👉 Open Bot</button>
-  </section>
-
-  <!-- Donate Section -->
-  <section id="donate" aria-label="Donate section">
-    <h2>Support Us with Donations</h2>
-    <p>To promote our links and maintain servers and domain names, please consider donating.</p>
-    <p>If you are in Nigeria, send donations to:</p>
-    <div class="account">9114301708<br/>Opay Bank<br/>Olatunji Abdumalik Ayomide</div>
-    <p>If you are outside Nigeria, send your donations to the following crypto address:</p>
-    <div class="account">BNB/USDT/BEP20:<br/>0xbBcc409872bC2441400735624638F3D67DAa7C4C</div>
-  </section>
+  <div id="linksContainer"></div>
 </div>
 
-<!-- Navigation -->
-<nav aria-label="Primary navigation">
-  <button id="nav-home" class="active" aria-controls="home" aria-selected="true" role="tab">
-    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M3 12L12 3l9 9v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-9z"/></svg>
-    Home
-  </button>
-  <button id="nav-premium" aria-controls="premium" aria-selected="false" role="tab">
-    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-    Premium
-  </button>
-  <button id="nav-victim" aria-controls="victim" aria-selected="false" role="tab">
-    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a7 7 0 0 1 13 0"/></svg>
-    Victim
-  </button>
-  <button id="nav-donate" aria-controls="donate" aria-selected="false" role="tab">
-    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M12 1v22m-7-7h14"/></svg>
-    Donate
-  </button>
-</nav>
-
 <script>
-  // Initialize Telegram WebApp safely
+  // Get Telegram WebApp object
   const tg = window.Telegram?.WebApp;
-  if (tg) tg.expand();
 
-  // Get Telegram User ID or default
-  const telegramId = tg?.initDataUnsafe?.user?.id || "unknown_user";
+  // Get user ID safely, or fallback
+  const telegramId = tg?.initDataUnsafe?.user?.id || null;
 
-  // Sample links data with images and URLs
-  const homeLinksData = [
-    { name: "Example Link 1", image: "https://via.placeholder.com/60", url: "https://example.com/link1" },
-    { name: "Example Link 2", image: "https://via.placeholder.com/60", url: "https://example.com/link2" }
-  ];
+  const userDisplay = document.getElementById('userDisplay');
+  const linksContainer = document.getElementById('linksContainer');
 
-  const premiumLinksData = [
-    { name: "Premium Link 1", image: "https://via.placeholder.com/60", url: "https://premium.com/link1" },
-    { name: "Premium Link 2", image: "https://via.placeholder.com/60", url: "https://premium.com/link2" }
-  ];
+  if (!telegramId) {
+    userDisplay.textContent = "⚠️ Telegram User ID not found. Please open this inside Telegram via your bot's WebApp button.";
+  } else {
+    userDisplay.textContent = `Your Telegram User ID: ${telegramId}`;
 
-  // Build link cards in given section with Telegram ID appended
-  function buildLinks(sectionId, linksData) {
-    const container = document.getElementById(sectionId + "-links");
-    container.innerHTML = "";
+    // Example links array
+    const links = [
+      { name: "Example Link 1", url: "https://example.com/link1" },
+      { name: "Example Link 2", url: "https://example.com/link2?foo=bar" }
+    ];
 
-    if (linksData.length === 0) {
-      container.innerHTML = "<p>No links available.</p>";
-      return;
-    }
+    // Build links with user ID prepended visibly and appended as URL param
+    links.forEach(link => {
+      // Build URL object to add userid param safely
+      const urlObj = new URL(link.url);
+      urlObj.searchParams.set("userid", telegramId);
 
-    linksData.forEach(link => {
-      let url;
-      try {
-        url = new URL(link.url);
-      } catch (e) {
-        console.error("Invalid URL:", link.url);
-        return;
-      }
-      if (telegramId !== "unknown_user") {
-        url.searchParams.set("userid", telegramId);
-      }
+      // Create container div for each link
+      const card = document.createElement('div');
+      card.className = 'link-card';
 
-      const card = document.createElement("div");
-      card.className = "link-card";
+      // Visible prepended user id label
+      const userIdLabel = document.createElement('div');
+      userIdLabel.className = 'userid-label';
+      userIdLabel.textContent = `User ID: ${telegramId}`;
 
-      const img = document.createElement("img");
-      img.src = link.image;
-      img.alt = link.name;
+      // The actual clickable link
+      const a = document.createElement('a');
+      a.href = urlObj.toString();
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = link.name + " →";
 
-      const info = document.createElement("div");
-      info.className = "link-info";
+      // Append to card
+      card.appendChild(userIdLabel);
+      card.appendChild(a);
 
-      const name = document.createElement("div");
-      name.className = "link-name";
-      name.textContent = link.name;
-
-      const linkEl = document.createElement("a");
-      linkEl.className = "link-url";
-      linkEl.href = url.toString();
-      linkEl.textContent = url.toString();
-      linkEl.target = "_blank";
-      linkEl.rel = "noopener noreferrer";
-
-      const copyBtn = document.createElement("button");
-      copyBtn.className = "copy-btn";
-      copyBtn.textContent = "Copy";
-      copyBtn.addEventListener("click", () => {
-        navigator.clipboard.writeText(url.toString()).then(() => {
-          copyBtn.textContent = "Copied!";
-          setTimeout(() => { copyBtn.textContent = "Copy"; }, 1500);
-        });
-      });
-
-      info.appendChild(name);
-      info.appendChild(linkEl);
-
-      card.appendChild(img);
-      card.appendChild(info);
-      card.appendChild(copyBtn);
-
-      container.appendChild(card);
-    });
-  }
-
-  // Initial build of links on page load
-  buildLinks("home", homeLinksData);
-  buildLinks("premium", premiumLinksData);
-
-  // Navigation buttons switching sections
-  const navButtons = document.querySelectorAll("nav button");
-  navButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      navButtons.forEach(b => {
-        b.classList.remove("active");
-        const sec = document.getElementById(b.getAttribute("aria-controls"));
-        if (sec) sec.classList.remove("active");
-        b.setAttribute("aria-selected", "false");
-      });
-
-      btn.classList.add("active");
-      btn.setAttribute("aria-selected", "true");
-      const targetId = btn.getAttribute("aria-controls");
-      const targetSection = document.getElementById(targetId);
-      if (targetSection) targetSection.classList.add("active");
-    });
-  });
-
-  // Open victim bot button action
-  const victimBtn = document.getElementById("open-victim-bot");
-  if (victimBtn) {
-    victimBtn.addEventListener("click", () => {
-      const victimBotUsername = "intelligentvictimbot";
-      window.open(`https://t.me/${victimBotUsername}`, "_blank");
+      // Append card to container
+      linksContainer.appendChild(card);
     });
   }
 </script>
