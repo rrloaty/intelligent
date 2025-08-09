@@ -3,46 +3,63 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Simple Referral Link</title>
+<title>Telegram WebApp User Info Example</title>
 <style>
-  body { font-family: Arial, sans-serif; max-width: 480px; margin: auto; padding: 20px; }
-  input { width: 100%; font-size: 1em; padding: 8px; }
-  button { margin-top: 10px; padding: 10px; font-size: 1em; cursor: pointer; }
+  body { font-family: Arial, sans-serif; max-width: 480px; margin: 40px auto; }
+  input { width: 100%; padding: 10px; font-size: 1.1em; margin-top: 10px; }
+  button { padding: 10px 20px; font-size: 1.1em; margin-top: 10px; cursor: pointer; }
   #copyMsg { color: green; margin-top: 5px; height: 20px; }
 </style>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
 
-<h1>Your Referral Link</h1>
+<h1>Your Telegram User Info</h1>
 
-<input type="text" id="refLink" readonly placeholder="Loading your referral link..." />
+<p><b>User ID:</b> <span id="userId">Loading...</span></p>
+<p><b>Username:</b> <span id="username">Loading...</span></p>
+<p><b>First Name:</b> <span id="firstName">Loading...</span></p>
+<p><b>Last Name:</b> <span id="lastName">Loading...</span></p>
+
+<h2>Your Referral Link</h2>
+<input type="text" id="refLink" readonly placeholder="Referral link will appear here" />
 <button onclick="copyRefLink()">Copy Referral Link</button>
 <div id="copyMsg"></div>
 
 <script>
-  const tg = window.Telegram?.WebApp;
-  tg?.expand();
+  const tg = window.Telegram.WebApp;
+  tg.expand();
 
-  // Get current user's Telegram ID
-  const telegramId = tg?.initDataUnsafe?.user?.id || null;
+  const user = tg.initDataUnsafe?.user || null;
 
-  const refLinkInput = document.getElementById("refLink");
+  const userIdEl = document.getElementById('userId');
+  const usernameEl = document.getElementById('username');
+  const firstNameEl = document.getElementById('firstName');
+  const lastNameEl = document.getElementById('lastName');
+  const refLinkInput = document.getElementById('refLink');
+  const copyMsg = document.getElementById('copyMsg');
 
-  if (telegramId) {
-    // Construct referral link with your bot username and the current user's Telegram ID
-    refLinkInput.value = `https://t.me/YourBotUsername?start=${telegramId}`;
+  if (user) {
+    userIdEl.textContent = user.id;
+    usernameEl.textContent = user.username || '(none)';
+    firstNameEl.textContent = user.first_name || '(none)';
+    lastNameEl.textContent = user.last_name || '(none)';
+
+    // Replace YourBotUsername with your actual bot username (without @)
+    refLinkInput.value = `https://t.me/YourBotUsername?start=${user.id}`;
   } else {
-    refLinkInput.value = "Open this WebApp via your Telegram bot to get your referral link.";
+    userIdEl.textContent = 'Not available';
+    usernameEl.textContent = 'Not available';
+    firstNameEl.textContent = 'Not available';
+    lastNameEl.textContent = 'Not available';
+    refLinkInput.value = 'Open this WebApp via your Telegram bot to get your referral link.';
   }
 
-  // Copy referral link to clipboard
   function copyRefLink() {
     if (!refLinkInput.value) return;
     navigator.clipboard.writeText(refLinkInput.value).then(() => {
-      document.getElementById("copyMsg").textContent = "✅ Referral link copied!";
-      setTimeout(() => {
-        document.getElementById("copyMsg").textContent = "";
-      }, 2000);
+      copyMsg.textContent = "✅ Referral link copied!";
+      setTimeout(() => copyMsg.textContent = '', 2000);
     });
   }
 </script>
