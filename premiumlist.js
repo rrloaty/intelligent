@@ -3,6 +3,6 @@
 
 const premiumUsers = [
   6976365864,  // Replace with actual Telegram user IDs
-  987654321,
+  7979664801,
   // Add more IDs here
 ];
