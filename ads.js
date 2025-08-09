@@ -1,5 +1,5 @@
 (function() {
-  const totalDuration = 10;  // total ad duration in seconds
+  const totalDuration = 15;  // total ad duration in seconds
   const noCloseDuration = 3; // seconds before close button appears
   const redirectUrl = "https://youtu.be/07wxRuoUbBI?si=sNsLtwFZq_KX0YDb"; // change this to your target URL
 
