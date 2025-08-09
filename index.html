@@ -95,20 +95,19 @@
     }
 
     /* Button styles */
-    .btn {
-      background: #00ff99;
-      color: #000;
-      padding: 12px 24px;
-      font-weight: 700;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      text-align: center;
-      font-size: 1.15rem;
-      transition: background 0.3s ease;
-      display: inline-block;
-      user-select: none;
-    }
+.btn {
+  background: #00ff99;
+  color: #000;
+  padding: 6px 12px;  /* smaller padding for copy/open buttons */
+  font-weight: 700;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: center;
+  font-size: 0.9rem;
+  transition: background 0.3s ease;
+  user-select: none;
+}
     .btn:hover {
       background: #00cc77;
     }
@@ -338,26 +337,62 @@
 
 // Render free links list
     function renderFreeLinks() {
-      freeLinksList.innerHTML = "";
-      freeLinks.forEach(link => {
-        const li = document.createElement("li");
+  freeLinksList.innerHTML = "";
+  freeLinks.forEach(link => {
+    const li = document.createElement("li");
 
-        const img = document.createElement("img");
-        img.src = link.image;
-        img.alt = link.name;
+    const img = document.createElement("img");
+    img.src = link.image;
+    img.alt = link.name;
 
-        const a = document.createElement("a");
-        a.href = formatUrl(link.urlTemplate);
-        a.target = "_blank";
-        a.rel = "noopener noreferrer";
-        a.textContent = link.name;
+    // The formatted URL string with the telegram ID
+    const fullUrl = formatUrl(link.urlTemplate);
 
-        li.appendChild(img);
-        li.appendChild(a);
-        freeLinksList.appendChild(li);
+    // Create a div for URL text, selectable by user
+    const urlText = document.createElement("div");
+    urlText.textContent = fullUrl;
+    urlText.style.flexGrow = "1";
+    urlText.style.marginRight = "15px";
+    urlText.style.fontFamily = "monospace";
+    urlText.style.fontSize = "0.9rem";
+    urlText.style.userSelect = "text";
+    urlText.style.wordBreak = "break-all";
+
+    // Copy button
+    const copyBtn = document.createElement("button");
+    copyBtn.textContent = "Copy";
+    copyBtn.className = "btn";
+    copyBtn.style.marginRight = "8px";
+    copyBtn.style.flexShrink = "0";
+    copyBtn.style.fontSize = "0.9rem";
+    copyBtn.style.padding = "6px 12px";
+    copyBtn.addEventListener("click", () => {
+      navigator.clipboard.writeText(fullUrl).then(() => {
+        copyBtn.textContent = "Copied!";
+        setTimeout(() => (copyBtn.textContent = "Copy"), 1500);
       });
-    }
+    });
 
+    // Open button
+    const openBtn = document.createElement("button");
+    openBtn.textContent = "Open";
+    openBtn.className = "btn";
+    openBtn.style.flexShrink = "0";
+    openBtn.style.fontSize = "0.9rem";
+    openBtn.style.padding = "6px 12px";
+    openBtn.addEventListener("click", () => {
+      window.open(fullUrl, "_blank", "noopener");
+    });
+
+    // Append all to list item
+    li.appendChild(img);
+    li.appendChild(urlText);
+    li.appendChild(copyBtn);
+    li.appendChild(openBtn);
+
+    freeLinksList.appendChild(li);
+  });
+}
     // Render premium links or message based on user access
     function renderPremiumLinks() {
       if (!telegramId) {
