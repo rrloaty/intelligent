@@ -1,97 +1,66 @@
 // premiumlist.js
 
-// Define which users have premium access
-const premiumUsers = [123456789];
+// Check Telegram WebApp environment
+const tg = window.Telegram?.WebApp || null;
 
-// Premium links list
+// If not inside Telegram or no user data, block everything
+if (!tg || !tg.initDataUnsafe?.user) {
+  document.body.innerHTML = `
+    <div style="font-family:sans-serif;text-align:center;margin-top:50px;">
+      <h2>❌ Premium content is only available inside Telegram</h2>
+      <p>Please open this link from the Telegram app.</p>
+    </div>
+  `;
+  throw new Error("Not in Telegram WebApp");
+}
+
+tg.ready();
+
+// Get Telegram user
+const u = tg.initDataUnsafe.user;
+const userId = u.id;
+
+// Premium links (edit here)
 const premiumLinksData = [
-  { title: "Example Link", url: "https://example.com", thumb: "https://logo.clearbit.com/example.com" },
-  { title: "Another Link", url: "https://another.com", thumb: "https://logo.clearbit.com/another.com" }
+  { title: "Premium Tool 1", url: "https://example.com/premium1?id=" + userId, thumb: "https://example.com/icon1.png" },
+  { title: "Premium Tool 2", url: "https://example.com/premium2?id=" + userId, thumb: "https://example.com/icon2.png" }
 ];
 
-// Load premium links into the DOM
-document.addEventListener("DOMContentLoaded", () => {
-  const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id || null;
-  const premiumLinksContainer = document.getElementById("premium-links");
+// Function to create a link item
+function createLinkItem(link, isFree, userId) {
+  const div = document.createElement("div");
+  div.className = "link-item";
+  div.innerHTML = `
+    <img src="${link.thumb}" alt="">
+    <div class="link-info">
+      <strong>${link.title}</strong>
+    </div>
+    <button class="btn small" onclick="openLink('${link.url}')">
+      Open Link
+    </button>
+  `;
+  return div;
+}
 
+// Render premium links
+document.addEventListener("DOMContentLoaded", () => {
+  const premiumContainer = document.getElementById("premium-links");
   premiumLinksData.forEach(link => {
-    premiumLinksContainer.appendChild(createLinkItem(link, false, userId));
+    premiumContainer.appendChild(createLinkItem(link, false, userId));
   });
 
-  // Show premium message if user is not premium
-  if (!premiumUsers.includes(userId)) {
-    document.getElementById("premium-msg").textContent =
-      "Go premium to view or copy these links.";
-  }
+  // Show premium message
+  document.getElementById("premium-msg").textContent = "You have access to premium links!";
 });
 
-// Creates link elements
-function createLinkItem(link, isFree, userId) {
-  const tg = window.Telegram?.WebApp || null;
-  const isPremiumUser = premiumUsers.includes(userId);
-
-  const wrapper = document.createElement("div");
-  wrapper.className = "link-item";
-
-  // Thumbnail
-  const imgDiv = document.createElement("div");
-  imgDiv.className = "link-thumb";
-  const img = document.createElement("img");
-  img.src = link.thumb;
-  imgDiv.appendChild(img);
-  wrapper.appendChild(imgDiv);
-
-  // Body
-  const bodyDiv = document.createElement("div");
-  bodyDiv.className = "link-body";
-
-  const title = document.createElement("div");
-  title.className = "link-title";
-  title.textContent = link.title;
-  bodyDiv.appendChild(title);
-
-  const urlDisplay = document.createElement("div");
-  urlDisplay.className = "link-url";
-  urlDisplay.textContent = isFree || isPremiumUser
-    ? link.url.replace("{id}", userId || "")
-    : "🔒 Premium — Subscribe to Unlock";
-  bodyDiv.appendChild(urlDisplay);
-
-  wrapper.appendChild(bodyDiv);
-
-  // Actions
-  const actions = document.createElement("div");
-  actions.className = "link-actions";
-
-  const copyBtn = document.createElement("button");
-  copyBtn.className = "btn ghost";
-  copyBtn.textContent = "Copy";
-  copyBtn.addEventListener("click", () => {
-    if (!isFree && !isPremiumUser) {
-      alert("Premium only!");
-      return;
-    }
-    const finalUrl = link.url.replace("{id}", userId || "");
-    navigator.clipboard.writeText(finalUrl).then(() => {
-      alert("Link copied!");
-    });
-  });
-  actions.appendChild(copyBtn);
-
-  const openBtn = document.createElement("button");
-  openBtn.className = "btn";
-  openBtn.textContent = "Open";
-  openBtn.addEventListener("click", () => {
-    if (!isFree && !isPremiumUser) {
-      alert("Premium only!");
-      return;
-    }
-    const finalUrl = link.url.replace("{id}", userId || "");
-    if (tg?.openLink) tg.openLink(finalUrl);
-    else window.open(finalUrl, "_blank");
-  });
-  actions.appendChild(openBtn);
-
-  wrapper.appendChild(actions);
-  return wrapper;
+// Open link function
+function openLink(url) {
+  if (tg?.openLink) {
+    tg.openLink(url);
+  } else {
+    window.open(url, "_blank");
+  }
 }
+
+// Expose createLinkItem to global scope so main.js can use it
+window.createLinkItem = createLinkItem;
