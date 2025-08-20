@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Intelligent Verification Linkbot - WebApp</title>
+  <title>Intelligent Linkbot - WebApp</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body, html {
@@ -197,7 +197,7 @@
         nameText.style.fontSize = "1rem";
 
         const copyBtn = document.createElement("button");
-        copyBtn.textContent = "Copy";
+        copyBtn.textContent = "Copy link";
         copyBtn.className = "btn";
         copyBtn.style.marginRight = "8px";
         copyBtn.addEventListener("click", () => {
@@ -224,62 +224,98 @@
 
     // Premium links renderer
     function renderPremiumLinks() {
-      if (!telegramId) {
-        premiumContent.innerHTML = `<p style="color:#ff6666;text-align:center;">Cannot detect Telegram ID. Open inside Telegram.</p>`;
-        return;
-      }
-      if (typeof premiumUsers === "undefined") {
-        premiumContent.innerHTML = `<p style="color:#ff6666;text-align:center;">Premium list missing. Check premiumlist.js.</p>`;
-        return;
-      }
-      if (premiumUsers.includes(telegramId)) {
-        premiumContent.innerHTML = "";
-        const ul = document.createElement("ul");
-        ul.className = "link-list";
-        premiumLinks.forEach(link => {
-          const li = document.createElement("li");
-          const img = document.createElement("img");
-          img.src = link.image;
-          img.alt = link.name;
-          const fullUrl = formatUrl(link.urlTemplate);
+  if (!telegramId) {
+    premiumContent.innerHTML = `<p style="color:#ff6666; text-align:center;">Cannot detect your Telegram ID. Please open this WebApp inside Telegram.</p>`;
+    return;
+  }
+  if (typeof premiumUsers === "undefined") {
+    premiumContent.innerHTML = `<p style="color:#ff6666; text-align:center;">Premium list is missing. Please check premiumlist.js.</p>`;
+    return;
+  }
 
-          const nameText = document.createElement("div");
-          nameText.textContent = link.name;
-          nameText.style.flexGrow = "1";
-          nameText.style.marginRight = "15px";
-          nameText.style.fontWeight = "600";
-          nameText.style.fontSize = "1rem";
+  if (premiumUsers.includes(telegramId)) {
+    // ✅ If premium → show the links with copy + open
+    premiumContent.innerHTML = "";
+    const ul = document.createElement("ul");
+    ul.className = "link-list";
 
-          const copyBtn = document.createElement("button");
-          copyBtn.textContent = "Copy";
-          copyBtn.className = "btn";
-          copyBtn.style.marginRight = "8px";
-          copyBtn.addEventListener("click", () => {
-            navigator.clipboard.writeText(fullUrl).then(() => {
-              copyBtn.textContent = "Copied!";
-              setTimeout(() => (copyBtn.textContent = "Copy"), 1500);
-            });
-          });
+    premiumLinks.forEach(link => {
+      const li = document.createElement("li");
 
-          const openBtn = document.createElement("button");
-          openBtn.textContent = "Open";
-          openBtn.className = "btn";
-          openBtn.addEventListener("click", () => {
-            window.open(fullUrl, "_blank", "noopener");
-          });
+      const img = document.createElement("img");
+      img.src = link.image;
+      img.alt = link.name;
 
-          li.appendChild(img);
-          li.appendChild(nameText);
-          li.appendChild(copyBtn);
-          li.appendChild(openBtn);
-          ul.appendChild(li);
+      const fullUrl = formatUrl(link.urlTemplate);
+
+      const nameText = document.createElement("div");
+      nameText.textContent = link.name;
+      nameText.style.flexGrow = "1";
+      nameText.style.marginRight = "15px";
+      nameText.style.fontWeight = "600";
+      nameText.style.fontSize = "1rem";
+
+      const copyBtn = document.createElement("button");
+      copyBtn.textContent = "Copy";
+      copyBtn.className = "btn";
+      copyBtn.style.marginRight = "8px";
+      copyBtn.addEventListener("click", () => {
+        navigator.clipboard.writeText(fullUrl).then(() => {
+          copyBtn.textContent = "Copied!";
+          setTimeout(() => (copyBtn.textContent = "Copy"), 1500);
         });
-        premiumContent.appendChild(ul);
-      } else {
-        premiumContent.innerHTML = `<p style="text-align:center;color:#aaa;">Upgrade to access premium links.</p>`;
-      }
-    }
+      });
 
+      const openBtn = document.createElement("button");
+      openBtn.textContent = "Open";
+      openBtn.className = "btn";
+      openBtn.addEventListener("click", () => {
+        window.open(fullUrl, "_blank", "noopener");
+      });
+
+      li.appendChild(img);
+      li.appendChild(nameText);
+      li.appendChild(copyBtn);
+      li.appendChild(openBtn);
+
+      ul.appendChild(li);
+    });
+
+    premiumContent.appendChild(ul);
+
+  } else {
+    // ❌ If NOT premium → show your upgrade message
+    premiumContent.innerHTML = `
+      <div style="max-width:500px;margin:20px auto;padding:16px;border-radius:16px;background:#151933;color:#e9ecff;font-family:system-ui,Roboto,Arial;">
+        <div style="position:relative;aspect-ratio:16/9;background:#0c0f20;border-radius:12px;overflow:hidden;">
+          <img src="https://images.unsplash.com/photo-1545239351-1141bd82e8a6?q=80&w=1200&auto=format&fit=crop" alt="Premium" style="width:100%;height:100%;object-fit:cover;display:block;">
+          <span style="position:absolute;top:12px;left:12px;background:linear-gradient(135deg,#f5c673,#d89b2b);color:#1a1205;font-weight:700;font-size:12px;padding:6px 10px;border-radius:999px;letter-spacing:.3px;">PREMIUM</span>
+        </div>
+    
+        <h3 style="margin:14px 0 8px;font-size:18px;font-weight:700;display:flex;align-items:center;gap:6px;">
+          <span>🔒</span> Bank, Credit/Debit card Crypto and many more link
+        </h3>
+        <p style="margin:0 0 12px;color:#97a0c3;font-size:14px;">
+          Go premium before you can copy or paste this link.
+        </p>
+    
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="text" value="https://example.com/your-premium-link" disabled
+                 style="flex:1;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#b9c0e0;font-size:14px;-webkit-text-security:disc;">
+          <button disabled style="padding:10px 14px;border:none;border-radius:10px;background:#6c8cff;color:#0a0e22;font-weight:700;cursor:not-allowed;opacity:.6;">Copy</button>
+        </div>
+    
+        <div style="margin-top:14px;padding:10px;border:1px dashed rgba(245,198,115,.5);background:rgba(255,213,133,.08);border-radius:10px;font-size:13px;display:flex;gap:10px;align-items:center;">
+          Access locked. Upgrade to unlock this link.
+          <a href="https://t.me/inamyophisintlinkbot" target="_blank" rel="noopener noreferrer"
+             style="margin-left:auto;background:linear-gradient(135deg,#f5c673,#d89b2b);color:#1a1205;padding:8px 12px;border-radius:8px;font-weight:700;text-decoration:none;">
+            Go Premium
+          </a>
+        </div>
+      </div>
+    `;
+  }
+}
     openBotBtn.addEventListener("click", () => {
       window.open("https://t.me/intelligentverificationlinkbot?start=start", "_blank");
     });
