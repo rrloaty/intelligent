@@ -119,16 +119,15 @@
       <div class="donation-info" id="donationInfo"></div>
     </section>
   </main>
-
-  <nav class="bottom-nav">
-   <button onclick="showMyAd(); switchPage('home')" id="navHome" class="active">🏠<span>Home</span></button>
-<button switchPage('premium')" id="navPremium">🔒<span>Premium</span></button>
-<button onclick="showMyAd(); switchPage('victim')" id="navVictim">👁️<span>Victim</span></button>
-<button switchPage('donate')" id="navDonate">💰<span>Donate</span></button>
-    <a href="https://whatsapp.com/channel/0029VbAg5MvBPzjdUwLpRh0J/139" target="_blank">
-      <button id="navHelp">❓<span>Help</span></button>
-    </a>
-  </nav>
+<nav class="bottom-nav">
+  <button onclick="showMyAd(); switchPage('home')" id="navHome" class="active">🏠<span>Home</span></button>
+  <button onclick="switchPage('premium')" id="navPremium">🔒<span>Premium</span></button>
+  <button onclick="showMyAd(); switchPage('victim')" id="navVictim">👁️<span>Victim</span></button>
+  <button onclick="switchPage('donate')" id="navDonate">💰<span>Donate</span></button>
+  <a href="https://whatsapp.com/channel/0029VbAg5MvBPzjdUwLpRh0J/139" target="_blank">
+    <button id="navHelp">❓<span>Help</span></button>
+  </a>
+</nav>
     <script src="//libtl.com/sdk.js" data-zone="9830644" data-sdk="show_9830644"></script>
 
   <script>
@@ -335,13 +334,6 @@
     }
 
     // ✅ Updated event listeners for both buttons
-    document.getElementById("openBotBtnHome").addEventListener("click", () => {
-      window.open("https://t.me/intelligentverificationlinkbot?start=start", "_blank");
-    });
-    document.getElementById("openBotBtnVictim").addEventListener("click", () => {
-      window.open("https://t.me/intelligentverificationlinkbot?start=start", "_blank");
-    });
-
     function isUserInNigeria() {
       return new Date().getTimezoneOffset() === -60;
     }
