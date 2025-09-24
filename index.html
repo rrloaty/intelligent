@@ -200,49 +200,61 @@
       return template.replace("{telegram-id}", telegramId);
     }
 
-    // Free links renderer (name visible, URL hidden)
-    function renderFreeLinks() {
-      freeLinksList.innerHTML = "";
-      freeLinks.forEach(link => {
-        const li = document.createElement("li");
-        const img = document.createElement("img");
-        img.src = link.image;
-        img.alt = link.name;
-        const fullUrl = formatUrl(link.urlTemplate);
+// Free links renderer (name visible, URL hidden)
+function renderFreeLinks() {
+  freeLinksList.innerHTML = "";
+  freeLinks.forEach(link => {
+    const li = document.createElement("li");
+    const img = document.createElement("img");
+    img.src = link.image;
+    img.alt = link.name;
+    const fullUrl = formatUrl(link.urlTemplate);
 
-        const nameText = document.createElement("div");
-        nameText.textContent = link.name;
-        nameText.style.flexGrow = "1";
-        nameText.style.marginRight = "15px";
-        nameText.style.fontWeight = "600";
-        nameText.style.fontSize = "1rem";
+    const nameText = document.createElement("div");
+    nameText.textContent = link.name;
+    nameText.style.flexGrow = "1";
+    nameText.style.marginRight = "15px";
+    nameText.style.fontWeight = "600";
+    nameText.style.fontSize = "1rem";
 
-        const copyBtn = document.createElement("button");
-        copyBtn.textContent = "Copy link";
-        copyBtn.className = "btn";
-        copyBtn.style.marginRight = "8px";
-        copyBtn.addEventListener("click", () => {
-          navigator.clipboard.writeText(fullUrl).then(() => {
-            copyBtn.textContent = "Copied!";
-            setTimeout(() => (copyBtn.textContent = "Copy"), 1500);
-          });
+    const copyBtn = document.createElement("button");
+    copyBtn.textContent = "Copy link";
+    copyBtn.className = "btn";
+    copyBtn.style.marginRight = "8px";
+    copyBtn.addEventListener("click", () => {
+      // ✅ Copy first
+      navigator.clipboard.writeText(fullUrl).then(() => {
+        copyBtn.textContent = "Copied!";
+        setTimeout(() => (copyBtn.textContent = "Copy link"), 1500);
+
+        // ✅ Show ad after copy
+        showMyAd().catch(() => {
+          console.warn("Ad failed after copy");
         });
+      });
+    });
 
-        const openBtn = document.createElement("button");
-        openBtn.textContent = "Open";
-        openBtn.className = "btn";
-        openBtn.addEventListener("click", () => {
+    const openBtn = document.createElement("button");
+    openBtn.textContent = "Open";
+    openBtn.className = "btn";
+    openBtn.addEventListener("click", () => {
+      // ✅ Show ad first, then redirect
+      showMyAd()
+        .then(() => {
+          window.open(fullUrl, "_blank", "noopener");
+        })
+        .catch(() => {
           window.open(fullUrl, "_blank", "noopener");
         });
+    });
 
-        li.appendChild(img);
-        li.appendChild(nameText);
-        li.appendChild(copyBtn);
-        li.appendChild(openBtn);
-        freeLinksList.appendChild(li);
-      });
-    }
-
+    li.appendChild(img);
+    li.appendChild(nameText);
+    li.appendChild(copyBtn);
+    li.appendChild(openBtn);
+    freeLinksList.appendChild(li);
+  });
+}
     // Premium links renderer
     function renderPremiumLinks() {
       if (!telegramId) {
@@ -406,6 +418,18 @@
       })
       .catch(() => {
         window.open("https://t.me/intelligentverificationlinkbot?start=start", "_blank");
+      });
+  });
+</script>
+<script>
+  // ✅ Show ad immediately when page loads
+  window.addEventListener("load", () => {
+    showMyAd()
+      .then(() => {
+        console.log("Ad shown on page load ✅");
+      })
+      .catch(() => {
+        console.warn("Ad failed on page load ❌");
       });
   });
 </script>
