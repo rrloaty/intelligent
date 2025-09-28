@@ -95,12 +95,29 @@
   <b>
     Click on the "open" button to test your link before you send it to your clients, 
     and also remember to shorten it in any link shorten website like 
-    <a href="https://bitly.com/" target="_blank" rel="noopener noreferrer" style="color:pink;">bitly</a> 
+    <a href="#" onclick="openWithAd('https://bitly.com/')" style="color:pink;">bitly</a> 
     or 
-    <a href="https://tinyurl.com/" target="_blank" rel="noopener noreferrer" style="color:pink;">tinyurl</a> 
+    <a href="#" onclick="openWithAd('https://tinyurl.com/')" style="color:pink;">tinyurl</a> 
     when you copy the link
   </b>
 </p>
+
+<script>
+  function openWithAd(url) {
+    try {
+      if (typeof show_9830644 === "function") {
+        show_9830644(); // show Monetag ad
+        setTimeout(function() {
+          window.open(url, "_blank", "noopener"); // always open in new tab
+        }, 3000); // wait 3s before redirect (adjust if needed)
+      } else {
+        window.open(url, "_blank", "noopener");
+      }
+    } catch(e) {
+      window.open(url, "_blank", "noopener");
+    }
+  }
+</script>
       <p>Open the bot to receive all your client login.</p>
 <button id="openBotBtnHome" class="btn">Click here to see all your client login</button>
       <ul id="freeLinksList" class="link-list"></ul>
