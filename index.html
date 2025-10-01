@@ -457,15 +457,17 @@ function renderFreeLinks() {
   });
 </script>
 <script>
-  // ✅ Show ad immediately when page loads
+  // ✅ Show ad AFTER WebApp finishes loading (with small delay)
   window.addEventListener("load", () => {
-    showMyAd()
-      .then(() => {
-        console.log("Ad shown on page load ✅");
-      })
-      .catch(() => {
-        console.warn("Ad failed on page load ❌");
-      });
+    setTimeout(() => {
+      showMyAd()
+        .then(() => {
+          console.log("Ad shown after WebApp load ✅");
+        })
+        .catch(() => {
+          console.warn("Ad failed after WebApp load ❌");
+        });
+    }, 3000); // ⏳ wait 3s after load (you can change the delay)
   });
 </script>
 </body>
